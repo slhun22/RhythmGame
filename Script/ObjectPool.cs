@@ -1,11 +1,10 @@
+/*
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
 using UnityEngine.Pool;
-using Cysharp.Threading.Tasks;
-
 public class ObjectPool : MonoBehaviour
 {
     [SerializeField] Node _nodePrefab;
@@ -27,7 +26,6 @@ public class ObjectPool : MonoBehaviour
     Node createNode()
     {
         Node node = Instantiate(_nodePrefab);
-        node.setPool(_nodePool);
         return node;
     }
 
@@ -82,3 +80,4 @@ public class ObjectPool : MonoBehaviour
        
     }
 }
+*/

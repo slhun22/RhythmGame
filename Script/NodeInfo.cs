@@ -1,8 +1,7 @@
-
 public class NodeInfo
 {
-    int lineNum;
-    float time;
+    public int lineNum { get; private set; }
+    public float time { get; private set; }
 
     public NodeInfo(int lineNum, float time)
     {
