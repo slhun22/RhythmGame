@@ -4,31 +4,24 @@ using UnityEngine;
 
 public class EditorNode : MonoBehaviour
 {
-    [SerializeField] float searchRadius;
+    public bool isSelected;
+    float checkRange;
+    bool isOntheMouse;
+    SpriteRenderer spriteRenderer;
     // Start is called before the first frame update
     void Start()
     {
-        
+        isOntheMouse = false;
+        isSelected = false;
+        checkRange = 0.7f;
+        spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        
-    }
-    Vector2 SearchClosestPos()
-    {
-        var possibleLines = Physics2D.OverlapCircleAll(transform.position, searchRadius);
-        int lineN = possibleLines.Length;
-        var shortest = possibleLines[0];
-        for (int i = 1; i < lineN; i++)
-        {
-            float dist = CalculateManhattanDist(transform.position, possibleLines[i].gameObject.transform.position);
-            float distShort = CalculateManhattanDist(transform.position, shortest.gameObject.transform.position);
-            if (dist < distShort) shortest = possibleLines[i];
-        }
-
-        return (Vector2)shortest.gameObject.transform.position;
+        MouseOntheNode();
+        SelectNode();
     }
 
     float CalculateManhattanDist(Vector2 a, Vector2 b)
@@ -39,14 +32,39 @@ public class EditorNode : MonoBehaviour
         return distX + distY;
     }
 
-    void PutNode()
+    void MouseOntheNode()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        Vector3 mousePos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, -Camera.main.transform.position.z));
+        float dist = CalculateManhattanDist((Vector2)transform.position, (Vector2)mousePos);
+
+        if (dist < checkRange)
         {
-            Vector2 targetPos = SearchClosestPos();
-            switch((int)targetPos.x)
+            if(!isSelected)
+                spriteRenderer.color = Color.red;
+            isOntheMouse = true;
+        }
+        else
+        {
+            if(!isSelected)
+                spriteRenderer.color = Color.white;
+            isOntheMouse = false;
+        }     
+    }
+
+    void SelectNode()
+    {
+        if(isOntheMouse && Input.GetMouseButtonDown(0))
+        {
+            switch(isSelected)
             {
-                
+                case true ://unselect case
+                    spriteRenderer.color = Color.white;
+                    isSelected = false;
+                    break;
+                case false://select case
+                    spriteRenderer.color = Color.blue;
+                    isSelected = true;
+                    break;
             }
         }
     }

@@ -5,8 +5,14 @@ using UnityEngine;
 
 public class CameraMove : MonoBehaviour
 {
+    public float maxCenterY { get; private set; }
     [SerializeField] float speed;
     Vector2 beforePoint = Vector2.zero;
+
+    private void Start()
+    {
+        maxCenterY = 0;
+    }
 
     private void Update()
     {
@@ -25,7 +31,12 @@ public class CameraMove : MonoBehaviour
             Vector2 diff = beforePoint - currentPoint;
 
             if(transform.position.y >= 0 || transform.position.y < 0 && diff.y > 0)
+            {
                 transform.position += new Vector3(0, diff.y, 0) * speed * Time.deltaTime;
+
+                if (transform.position.y > maxCenterY)
+                    maxCenterY = transform.position.y;
+            }
         }
 
         else

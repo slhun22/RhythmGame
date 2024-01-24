@@ -4,39 +4,32 @@ using UnityEngine;
 
 public class EditorManager : MonoBehaviour
 {
-    [SerializeField] GameObject nodeObj;
-    bool isActive;
+    [SerializeField] CameraMove cameraMoveScript;
+    [SerializeField] GameObject lineNodeObj;
+    [SerializeField] List<Transform> lineParents = new List<Transform>(4);
+    [SerializeField] int toplineNum;
     // Start is called before the first frame update
     void Start()
     {
-        isActive = false;
+        toplineNum = 10;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        GenerateNewLine();
     }
-
-    public void GenerateInfiniteGrid()
+    
+    void GenerateNewLine()
     {
-
-    }
- 
-    public void GenerateNode()
-    {
-        if(!isActive)
+        int expectedTopLineNum = (int)cameraMoveScript.maxCenterY + 10;
+        while (expectedTopLineNum > toplineNum)
         {
-            isActive = true;
-            
-            nodeObj.SetActive(true);
-            nodeObj.transform.position = transform.position;
+            Instantiate(lineNodeObj, new Vector3(-7, toplineNum - 4, 0), Quaternion.identity, lineParents[0]);
+            Instantiate(lineNodeObj, new Vector3(-3, toplineNum - 4, 0), Quaternion.identity, lineParents[1]);
+            Instantiate(lineNodeObj, new Vector3(1, toplineNum - 4, 0), Quaternion.identity, lineParents[2]);
+            Instantiate(lineNodeObj, new Vector3(5, toplineNum - 4, 0), Quaternion.identity, lineParents[3]);
+            toplineNum++;
         }
-    }
-
-    void NodeControl()
-    {
-        Vector3 mousePos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, -Camera.main.transform.position.z));
-        nodeObj.transform.position = mousePos;
     }
 }
