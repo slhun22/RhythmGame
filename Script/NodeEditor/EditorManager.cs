@@ -4,35 +4,42 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class EditorManager : MonoBehaviour
 {
+    public bool isPlaying;
     [SerializeField] CameraMove cameraMoveScript;
     [SerializeField] GameObject lineNodeObj;
     [SerializeField] GameObject musicCheckPointObj;
     [SerializeField] GameObject progressBarObj;
     [SerializeField] List<Transform> lineParents = new List<Transform>(4);
     [SerializeField] int toplineNum;
-    [SerializeField] int musicCheckNum = -1;
+    [SerializeField] int musicCheckNum;
     [SerializeField] TMP_InputField bpmInput;
     [SerializeField] AudioSource audiosrc;
     [SerializeField] AudioClip music;
+    [SerializeField] TextMeshProUGUI pitchText;
     float BPM;
-    bool isPlaying;
+    bool isProgressBarActive;
     // Start is called before the first frame update
     void Start()
     {
         toplineNum = 10;
+        musicCheckNum = 0;
         audiosrc.clip = music;
         isPlaying = false;
+        isProgressBarActive = false;
     }
 
     // Update is called once per frame
     void Update()
     {
         GenerateNewLine();
+        MusicProgressBar();
+        SimulateSpeedManage();
     }
     
     void GenerateNewLine()//Create new Lines
@@ -49,7 +56,8 @@ public class EditorManager : MonoBehaviour
         }
     }
     public void SetBPM() { BPM = float.Parse(bpmInput.text); }
-    public void SetMusicCheckPoint(int y) { musicCheckNum = y; }
+    public int GetMusicCheckPosition() { return musicCheckNum - 4; }//return real position of check point
+    public void SetMusicCheckPoint(int y) { musicCheckNum = y; }//send position number of the check point to manager
     public void MusicPlay()
     {
         if (!isPlaying)
@@ -60,24 +68,61 @@ public class EditorManager : MonoBehaviour
             audiosrc.time = playStartTime;
             audiosrc.Play();
             isPlaying = true;
-            MusicProgressBar().Forget();
         }
 
         else
         {
             audiosrc.Stop();
             isPlaying = false;
-        }   
+        }
     }
 
-    async UniTaskVoid MusicProgressBar()
+    public Vector2 GetTranslatePower() { return Vector2.up * BPM / 60 * 4 * Time.deltaTime * audiosrc.pitch; }
+    void MusicProgressBar()
     {
-        await UniTask.WaitUntil(() => isPlaying);
-        float bitsPerSecond = BPM / 60;
-        float speed = bitsPerSecond * 4;
-        while(isPlaying)
+        if(isPlaying)
         {
-            progressBarObj.transform.Translate(Vector2.up * speed * Time.deltaTime);
+            if(!isProgressBarActive)
+            {
+                progressBarObj.transform.position = new Vector3(-1, GetMusicCheckPosition(), 0);
+                isProgressBarActive = true;
+            }
+           
+            progressBarObj.transform.Translate(GetTranslatePower());
+        }
+
+        else if(!isPlaying && isProgressBarActive)
+        {
+            progressBarObj.transform.position = new Vector3(-1, -9, 0);
+            isProgressBarActive = false;
+        }       
+    }
+
+    public void SimulateSpeedManage()
+    {
+        if (Input.GetKeyDown(KeyCode.DownArrow))
+        {
+            if (audiosrc.pitch <= 0.2f)
+                audiosrc.pitch = 0.2f;
+
+            else
+            {
+                audiosrc.pitch -= 0.1f;
+                pitchText.text = $"Speed : {audiosrc.pitch}";
+            }
+        }
+
+
+        else if (Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            if (audiosrc.pitch >= 1)
+                audiosrc.pitch = 1f;
+
+            else
+            {
+                audiosrc.pitch += 0.1f;
+                pitchText.text = $"Speed : {audiosrc.pitch}";
+            }
         }
     }
 }

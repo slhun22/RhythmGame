@@ -238,7 +238,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 0.322
-  m_Pitch: 1
+  m_Pitch: 0.5
   Loop: 0
   Mute: 0
   Spatialize: 0
@@ -383,7 +383,7 @@ MonoBehaviour:
   musicAudioSrc: {fileID: 387298215}
   tickSound: {fileID: 8300000, guid: 411d6c89d37112e4a867f91acc4ee711, type: 3}
   musicClip: {fileID: 8300000, guid: 8b04bc00bdb31994f8095d7af2abaa51, type: 3}
-  BPM: 177.3
+  BPM: 88.65
 --- !u!82 &483505737
 AudioSource:
   m_ObjectHideFlags: 0
