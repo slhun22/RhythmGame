@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
+using System.IO;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -16,14 +17,16 @@ public class EditorManager : MonoBehaviour
     [SerializeField] GameObject musicCheckPointObj;
     [SerializeField] GameObject progressBarObj;
     [SerializeField] List<Transform> lineParents = new List<Transform>(4);
-    [SerializeField] int toplineNum;
-    [SerializeField] int musicCheckNum;
+    [SerializeField] int toplineNum;//1 start
+    [SerializeField] int musicCheckNum;//0 start
+    [SerializeField] TMP_InputField songNameInput;
     [SerializeField] TMP_InputField bpmInput;
     [SerializeField] AudioSource audiosrc;
     [SerializeField] AudioClip music;
     [SerializeField] TextMeshProUGUI pitchText;
     float BPM;
     bool isProgressBarActive;
+    string songName;
     // Start is called before the first frame update
     void Start()
     {
@@ -112,7 +115,6 @@ public class EditorManager : MonoBehaviour
             }
         }
 
-
         else if (Input.GetKeyDown(KeyCode.UpArrow))
         {
             if (audiosrc.pitch >= 1)
@@ -124,5 +126,67 @@ public class EditorManager : MonoBehaviour
                 pitchText.text = $"Speed : {audiosrc.pitch}";
             }
         }
+    }
+
+    public void Save()
+    {
+        List<NodeInfo> nodeInfos = new List<NodeInfo>(2000);
+        var line1Node = lineParents[0].GetComponentsInChildren<EditorNode>();
+        var line2Node = lineParents[1].GetComponentsInChildren<EditorNode>();
+        var line3Node = lineParents[2].GetComponentsInChildren<EditorNode>();
+        var line4Node = lineParents[3].GetComponentsInChildren<EditorNode>();
+
+        for(int i = 0; i < toplineNum; i++)
+        {
+            if (line1Node[i].isSelected) nodeInfos.Add(ExtractNodeInfo(line1Node[i]));
+            if (line2Node[i].isSelected) nodeInfos.Add(ExtractNodeInfo(line2Node[i]));
+            if (line3Node[i].isSelected) nodeInfos.Add(ExtractNodeInfo(line3Node[i]));
+            if (line4Node[i].isSelected) nodeInfos.Add(ExtractNodeInfo(line4Node[i]));
+        }
+
+        string path = string.Format("{0}/{1}.txt", Application.persistentDataPath, songName);
+        if (File.Exists(path)) File.Delete(path);
+        int length = nodeInfos.Count;
+        for (int i = 0; i < length; i++)
+        {
+            int lineNum = nodeInfos[i].lineNum;
+            float bits = nodeInfos[i].bit;
+            string data = $"{lineNum} {bits}\n";
+            File.AppendAllText(path, data);
+        }
+    }
+
+    NodeInfo ExtractNodeInfo(EditorNode editorNode)
+    {
+        int lineNum = 0;
+        switch ((int)editorNode.gameObject.transform.position.x)
+        {
+            case -7:
+                lineNum = 1;
+                break;
+            case -3:
+                lineNum = 2;
+                break;
+            case 1:
+                lineNum = 3;
+                break;
+            case 5:
+                lineNum = 4;
+                break;
+            default:
+                Debug.Log("Wrong lineNum position detected!!");
+                break;
+        }
+
+        float editorPosY = editorNode.gameObject.transform.position.y; //-4 start
+        float cumulatedBit = editorPosY / 4 + 1;
+        NodeInfo nodeInfo = new NodeInfo(lineNum, cumulatedBit);
+
+        return nodeInfo;
+    }
+
+    public void Load()
+    {
+
     }
 }

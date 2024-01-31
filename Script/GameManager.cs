@@ -69,11 +69,11 @@ public class GameManager : MonoBehaviour
             var nodeScript = node.GetComponent<Node>();
             nodeScript.SetNodeLine(nodeData.lineNum);
             SetNodePos(nodeScript);
-            ActivateNode(nodeData.time, node).Forget();
+            //ActivateNode(nodeData.time, node).Forget();
         }
     }
 
-    private async UniTaskVoid ActivateNode(float time, GameObject nodeObj)
+    private async UniTaskVoid ActivateNode(float time, GameObject nodeObj)//need to be fixed
     {
         nodeObj.SetActive(false);
         await UniTask.Delay(TimeSpan.FromSeconds(time));
