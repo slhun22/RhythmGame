@@ -68,4 +68,10 @@ public class EditorNode : MonoBehaviour
             }
         }
     }
+
+    public void SetNodeSelectMode() //for Load function in EditorManager
+    {
+        spriteRenderer.color = Color.blue;
+        isSelected = true;
+    }
 }

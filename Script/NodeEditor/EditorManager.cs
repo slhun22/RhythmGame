@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -27,6 +28,7 @@ public class EditorManager : MonoBehaviour
     float BPM;
     bool isProgressBarActive;
     string songName;
+    List<NodeInfo> nodeInfos = new List<NodeInfo>(2000);
     // Start is called before the first frame update
     void Start()
     {
@@ -59,13 +61,13 @@ public class EditorManager : MonoBehaviour
         }
     }
     public void SetBPM() { BPM = float.Parse(bpmInput.text); }
+    public void SetSongName() { songName = songNameInput.text; }
     public int GetMusicCheckPosition() { return musicCheckNum - 4; }//return real position of check point
     public void SetMusicCheckPoint(int y) { musicCheckNum = y; }//send position number of the check point to manager
     public void MusicPlay()
     {
         if (!isPlaying)
         {
-            SetBPM();
             float timePerBit = 60 / BPM;
             float playStartTime = timePerBit * musicCheckNum / 4;
             audiosrc.time = playStartTime;
@@ -146,6 +148,8 @@ public class EditorManager : MonoBehaviour
 
         string path = string.Format("{0}/{1}.txt", Application.persistentDataPath, songName);
         if (File.Exists(path)) File.Delete(path);
+        string basicSongData = $"{songName} {BPM}\n";
+        File.AppendAllText(path, basicSongData);
         int length = nodeInfos.Count;
         for (int i = 0; i < length; i++)
         {
@@ -184,9 +188,68 @@ public class EditorManager : MonoBehaviour
 
         return nodeInfo;
     }
+    void LoadStructure()
+    {
+        string path = string.Format("{0}/{1}.txt", Application.persistentDataPath, songName);
+        if(File.Exists(path))
+        {
+            string[] datas = File.ReadAllLines(path);
+            string[] s;
+            int lineNum;
+            float bit = 0;
+            float maxbit = 0;
+            string[] basicData = datas[0].Split(' ');
+            songName = basicData[0];
+            BPM = float.Parse(basicData[1]);
+            Debug.Log($"Song name : {songName}, BPM : {BPM}");
 
+            for(int i = 1; i < datas.Length; i++)
+            {
+                s = datas[i].Split(' ');
+                lineNum = int.Parse(s[0]);
+                bit = float.Parse(s[1]);
+                nodeInfos.Add(new NodeInfo(lineNum, bit));
+                if (bit > maxbit) maxbit = bit;
+            }
+            //(toplinenum 1) == (-4 of position y)
+            int beforeTopLineNum = (int)(bit * 4) + 1;
+            cameraMoveScript.maxCenterY = beforeTopLineNum - 10;//automatically generate line by function "GenerateNewLine()"
+        }
+       
+        else
+        {
+            Debug.Log("No matching file");
+        }
+    }
+
+    void LoadComplete()
+    {
+        var line1Node = lineParents[0].GetComponentsInChildren<EditorNode>();
+        var line2Node = lineParents[1].GetComponentsInChildren<EditorNode>();
+        var line3Node = lineParents[2].GetComponentsInChildren<EditorNode>();
+        var line4Node = lineParents[3].GetComponentsInChildren<EditorNode>();
+
+        for (int i = 0; i < nodeInfos.Count; i++)
+        {
+            int lineNum = nodeInfos[i].lineNum;
+            float bit = nodeInfos[i].bit;
+            int index = (int)(bit * 4);
+            if (lineNum == 1) line1Node[index].SetNodeSelectMode();
+            else if (lineNum == 2) line2Node[index].SetNodeSelectMode();
+            else if (lineNum == 3) line3Node[index].SetNodeSelectMode();
+            else if (lineNum == 4) line4Node[index].SetNodeSelectMode();
+            else Debug.Log("Wrong lineNum");
+        }
+    }
+
+    async UniTaskVoid LoadUniTask()
+    {
+        LoadStructure();
+        await UniTask.WaitUntil(() => (int)cameraMoveScript.maxCenterY + 10 <= toplineNum);
+        LoadComplete();
+    }
     public void Load()
     {
-
+        LoadUniTask().Forget();
     }
 }

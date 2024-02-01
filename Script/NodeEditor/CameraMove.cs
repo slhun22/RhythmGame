@@ -6,7 +6,7 @@ using UnityEngine;
 public class CameraMove : MonoBehaviour
 {
     [SerializeField] EditorManager manager;
-    public float maxCenterY { get; private set; }
+    public float maxCenterY { get; set; }
     [SerializeField] float speed;
     Vector2 beforePoint = Vector2.zero;
     Vector3 chaseBeforePos;
