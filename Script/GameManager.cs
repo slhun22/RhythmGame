@@ -1,21 +1,28 @@
 using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
     [SerializeField] GameObject nodePrefab;
     [SerializeField] Transform laneCenter;
+    string songname;
+    float BPM;
     List<NodeInfo> currentSongDatas = new List<NodeInfo>(20);//contains current songs all nodedatas by using NodeInfo class.
     public float speed;
 
 
+    private void Awake()
+    {
+        Application.targetFrameRate = 60;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
-        LoadDataPassive();
-        //LoadNodeData("asdf");
+        LoadNodeData("MilkyWayGalaxyTest");
         PrepareAllNodes();
     }
 
@@ -24,8 +31,8 @@ public class GameManager : MonoBehaviour
     {
         
     }
-
-    void LoadDataPassive()
+    #region TestFunc
+    void LoadDataPassive()//only for test
     {
         NodeInfo nodeInfo1 = new NodeInfo(1, 1);
         currentSongDatas.Add(nodeInfo1);
@@ -44,19 +51,32 @@ public class GameManager : MonoBehaviour
         NodeInfo nodeInfo8 = new NodeInfo(2, 8.1f);
         currentSongDatas.Add(nodeInfo8);
     }
-
-    public void LoadNodeData(string textData)//textfile form : linenum occurtime \n linenum occurtime ...  
+    #endregion
+    public void LoadNodeData(string songName)
     {
-        //text>>nodeInfo parsing
-        string[] nodeDatas = textData.Split('\n');
-        int length = nodeDatas.Length;
-        for(int i = 0; i < length; i++)
+        string path = string.Format("{0}/{1}.txt", Application.persistentDataPath, songName);
+        
+        if(File.Exists(path))
         {
-            var s = nodeDatas[i];
-            string[] nodeData = s.Split(' ');
-            NodeInfo nodeInfo = new NodeInfo(int.Parse(nodeData[0]), float.Parse(nodeData[1]));
-            currentSongDatas.Add(nodeInfo);
+            string textData = File.ReadAllText(path);
+            string[] nodeDatas = textData.Split('\n');
+            string[] basicData = nodeDatas[0].Split(' ');
+            songname = basicData[0];
+            BPM = float.Parse(basicData[1]);
+            int length = nodeDatas.Length;
+            for (int i = 1; i < length; i++)
+            {
+                var s = nodeDatas[i];
+                string[] nodeData = s.Split(' ');
+                NodeInfo nodeInfo = new NodeInfo(int.Parse(nodeData[0]), float.Parse(nodeData[1]));
+                currentSongDatas.Add(nodeInfo);
+            }
         }
+
+        else
+        {
+            Debug.Log("File lost");
+        }      
     }
 
     public void PrepareAllNodes()

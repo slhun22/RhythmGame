@@ -8,14 +8,16 @@ using UnityEngine.Pool;
 public class Node : MonoBehaviour
 {
     float speed;
+    float dist;
     public int line { get; private set;}
     float timer;
     float expectedArriveTime;
-    void OnEnable()
+    void Start()
     {
         timer = 0f;
         speed = 20f;
-        expectedArriveTime = 10f / speed;
+        dist = 10f;
+        expectedArriveTime = dist / speed;
     }
 
     // Update is called once per frame

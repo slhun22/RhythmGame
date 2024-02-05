@@ -146,6 +146,7 @@ public class EditorManager : MonoBehaviour
             if (line4Node[i].isSelected) nodeInfos.Add(ExtractNodeInfo(line4Node[i]));
         }
 
+        SetSongName();
         string path = string.Format("{0}/{1}.txt", Application.persistentDataPath, songName);
         if (File.Exists(path)) File.Delete(path);
         string basicSongData = $"{songName} {BPM}\n";
