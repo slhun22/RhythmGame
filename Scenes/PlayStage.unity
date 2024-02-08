@@ -238,7 +238,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 0.322
-  m_Pitch: 0.5
+  m_Pitch: 1
   Loop: 0
   Mute: 0
   Spatialize: 0
@@ -348,6 +348,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ee7c8bb114f56347a30c9dde97deb1f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gm: {fileID: 1409628545}
   clip: {fileID: 8300000, guid: 8b04bc00bdb31994f8095d7af2abaa51, type: 3}
 --- !u!1 &483505735
 GameObject:
@@ -366,7 +367,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &483505736
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -624,7 +625,7 @@ GameObject:
   - component: {fileID: 538897336}
   - component: {fileID: 538897335}
   m_Layer: 0
-  m_Name: LaneCenter
+  m_Name: SpawnLane
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -690,7 +691,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 538897334}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 6, z: 0}
+  m_LocalPosition: {x: 0, y: 15, z: 0}
   m_LocalScale: {x: 28.52563, y: 0.07546099, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -877,9 +878,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45d1e02dd89855e4a9fff16b8672729e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  musicWaitTime: 2
+  speed: 30
   nodePrefab: {fileID: 5040339049584434973, guid: d2d8eeda6097ff244a0a90db69521487, type: 3}
-  laneCenter: {fileID: 538897336}
-  speed: 0
+  spawnLine: {fileID: 538897336}
+  judgeLine: {fileID: 1857252105}
 --- !u!4 &1409628546
 Transform:
   m_ObjectHideFlags: 0

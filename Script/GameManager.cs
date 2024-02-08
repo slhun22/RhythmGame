@@ -6,13 +6,15 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    public float musicWaitTime;
+    [SerializeField] float speed;
     [SerializeField] GameObject nodePrefab;
-    [SerializeField] Transform laneCenter;
+    [SerializeField] Transform spawnLine;
+    [SerializeField] Transform judgeLine;
+    List<NodeInfo> currentSongDatas = new List<NodeInfo>(20);//contains current songs all nodedatas by using NodeInfo class.
     string songname;
     float BPM;
-    List<NodeInfo> currentSongDatas = new List<NodeInfo>(20);//contains current songs all nodedatas by using NodeInfo class.
-    public float speed;
-
+    float dist;
 
     private void Awake()
     {
@@ -22,6 +24,7 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        SetDist();
         LoadNodeData("MilkyWayGalaxyTest");
         PrepareAllNodes();
     }
@@ -52,14 +55,17 @@ public class GameManager : MonoBehaviour
         currentSongDatas.Add(nodeInfo8);
     }
     #endregion
+    void SetDist()
+    {
+        dist = spawnLine.position.y - judgeLine.position.y;
+    }
     public void LoadNodeData(string songName)
     {
         string path = string.Format("{0}/{1}.txt", Application.persistentDataPath, songName);
         
         if(File.Exists(path))
         {
-            string textData = File.ReadAllText(path);
-            string[] nodeDatas = textData.Split('\n');
+            string[] nodeDatas = File.ReadAllLines(path);
             string[] basicData = nodeDatas[0].Split(' ');
             songname = basicData[0];
             BPM = float.Parse(basicData[1]);
@@ -68,6 +74,7 @@ public class GameManager : MonoBehaviour
             {
                 var s = nodeDatas[i];
                 string[] nodeData = s.Split(' ');
+                Debug.Log(nodeData[0] + " " + nodeData[1]);
                 NodeInfo nodeInfo = new NodeInfo(int.Parse(nodeData[0]), float.Parse(nodeData[1]));
                 currentSongDatas.Add(nodeInfo);
             }
@@ -87,16 +94,20 @@ public class GameManager : MonoBehaviour
             NodeInfo nodeData = currentSongDatas[i];
             GameObject node = Instantiate(nodePrefab);
             var nodeScript = node.GetComponent<Node>();
+            nodeScript.speed = speed;
+            nodeScript.dist = dist;
             nodeScript.SetNodeLine(nodeData.lineNum);
             SetNodePos(nodeScript);
-            //ActivateNode(nodeData.time, node).Forget();
+            ActivateNode(nodeData.bit, node).Forget();
         }
     }
-
-    private async UniTaskVoid ActivateNode(float time, GameObject nodeObj)//need to be fixed
+    private async UniTaskVoid ActivateNode(float bit, GameObject nodeObj)
     {
+        float activateBit = bit - (BPM * dist) / (60 * speed);
+        float secPerBit = 60 / BPM;
+        float waitTime = activateBit * secPerBit;
         nodeObj.SetActive(false);
-        await UniTask.Delay(TimeSpan.FromSeconds(time));
+        await UniTask.Delay(TimeSpan.FromSeconds(waitTime + musicWaitTime));
         nodeObj.SetActive(true);
     }
     void SetNodePos(Node node)
@@ -104,16 +115,16 @@ public class GameManager : MonoBehaviour
         switch (node.line)
         {
             case 1:
-                node.transform.position = laneCenter.position + new Vector3(-6, 0, 0);//lane1
+                node.transform.position = spawnLine.position + new Vector3(-6, 0, 0);//lane1
                 break;
             case 2:
-                node.transform.position = laneCenter.position + new Vector3(-2, 0, 0);//lane2
+                node.transform.position = spawnLine.position + new Vector3(-2, 0, 0);//lane2
                 break;
             case 3:
-                node.transform.position = laneCenter.position + new Vector3(2, 0, 0);//lane3
+                node.transform.position = spawnLine.position + new Vector3(2, 0, 0);//lane3
                 break;
             case 4:
-                node.transform.position = laneCenter.position + new Vector3(6, 0, 0);//lane4
+                node.transform.position = spawnLine.position + new Vector3(6, 0, 0);//lane4
                 break;
         }
     }

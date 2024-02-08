@@ -7,16 +7,18 @@ using UnityEngine.Pool;
 
 public class Node : MonoBehaviour
 {
-    float speed;
-    float dist;
+    public float speed { get; set; }
+    public float dist { get; set; }
     public int line { get; private set;}
     float timer;
     float expectedArriveTime;
+    const float PERFECT_TIME = 41.7f * 0.001f;
+    const float GREAT_TIME = 83.3f * 0.001f;
+    const float GOOD_TIME = 108.3f * 0.001f;
+    const float BAD_TIME = 125.0f * 0.001f;
     void Start()
     {
         timer = 0f;
-        speed = 20f;
-        dist = 10f;
         expectedArriveTime = dist / speed;
     }
 
@@ -25,13 +27,13 @@ public class Node : MonoBehaviour
     {
         timer += Time.deltaTime;
         transform.Translate(Vector3.down * speed * Time.deltaTime);
-        if (Input.GetKeyDown(GetNodeLaneInput()) && expectedArriveTime - timer < 0.08f)
+        if (Input.GetKeyDown(GetNodeLaneInput()) && expectedArriveTime - timer < BAD_TIME)
         {
             nodeJudgement(timer);
             gameObject.SetActive(false);
         }
 
-        if(timer - expectedArriveTime > 0.08f)
+        if(timer - expectedArriveTime > BAD_TIME)
         {
             Debug.Log("Miss");
             gameObject.SetActive(false);
@@ -62,10 +64,10 @@ public class Node : MonoBehaviour
     {
         float diff = Mathf.Abs(inputTime - expectedArriveTime);
 
-        if (0 <= diff && diff < 0.02f) Debug.Log("perfect");
-        else if (0.02f <= diff && diff < 0.04f) Debug.Log("Great");
-        else if (0.04f <= diff && diff < 0.06f) Debug.Log("Good");
-        else if (0.06f <= diff && diff < 0.08f) Debug.Log("Bad");
+        if (0 <= diff && diff < PERFECT_TIME) Debug.Log("perfect");
+        else if (PERFECT_TIME <= diff && diff < GREAT_TIME) Debug.Log("Great");
+        else if (GREAT_TIME <= diff && diff < GOOD_TIME) Debug.Log("Good");
+        else if (GOOD_TIME <= diff && diff < BAD_TIME) Debug.Log("Bad");
     }
     
     public void SetNodeLine(int line)
