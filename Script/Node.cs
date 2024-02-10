@@ -7,9 +7,9 @@ using UnityEngine.Pool;
 
 public class Node : MonoBehaviour
 {
-    public float speed { get; set; }
-    public float dist { get; set; }
-    public int line { get; private set;}
+    float speed;
+    float dist;
+    public int line { get; private set; }
     float timer;
     float expectedArriveTime;
     const float PERFECT_TIME = 41.7f * 0.001f;
@@ -19,6 +19,8 @@ public class Node : MonoBehaviour
     void Start()
     {
         timer = 0f;
+        speed = GameManager.instance.speed;
+        dist = GameManager.instance.dist;
         expectedArriveTime = dist / speed;
     }
 
@@ -33,21 +35,24 @@ public class Node : MonoBehaviour
             gameObject.SetActive(false);
         }
 
-        if(timer - expectedArriveTime > BAD_TIME)
+        if (timer - expectedArriveTime > BAD_TIME)
         {
             Debug.Log("Miss");
+            GameManager.instance.SetJudegeUI(4).Forget();
+            GameManager.instance.ClearDetailJudge();
+            GameManager.instance.combo = 0;
             gameObject.SetActive(false);
         }
     }
     KeyCode GetNodeLaneInput()
     {
         KeyCode laneInput = KeyCode.Space;
-        switch(line)
+        switch (line)
         {
-            case 1 : 
+            case 1:
                 laneInput = KeyCode.D;
                 break;
-            case 2 : 
+            case 2:
                 laneInput = KeyCode.F;
                 break;
             case 3:
@@ -60,14 +65,39 @@ public class Node : MonoBehaviour
         return laneInput;
     }
 
-    void nodeJudgement(float inputTime)//판정시간을 speed에 상대적이게 바꿔야할듯
+    void nodeJudgement(float inputTime)
     {
-        float diff = Mathf.Abs(inputTime - expectedArriveTime);
+        float actualDiff = inputTime - expectedArriveTime;
+        float diff = Mathf.Abs(actualDiff);
 
-        if (0 <= diff && diff < PERFECT_TIME) Debug.Log("perfect");
-        else if (PERFECT_TIME <= diff && diff < GREAT_TIME) Debug.Log("Great");
-        else if (GREAT_TIME <= diff && diff < GOOD_TIME) Debug.Log("Good");
-        else if (GOOD_TIME <= diff && diff < BAD_TIME) Debug.Log("Bad");
+        if (0 <= diff && diff < PERFECT_TIME)
+        {
+            Debug.Log("perfect");
+            GameManager.instance.SetJudegeUI(0).Forget();
+            GameManager.instance.ClearDetailJudge();
+            GameManager.instance.combo++;
+        }
+        else if (PERFECT_TIME <= diff && diff < GREAT_TIME)
+        {
+            Debug.Log("Great");
+            GameManager.instance.SetJudegeUI(1).Forget();
+            GameManager.instance.SetDetailJudgeUI(actualDiff).Forget();
+            GameManager.instance.combo++;
+        }
+        else if (GREAT_TIME <= diff && diff < GOOD_TIME)
+        {
+            Debug.Log("Good");
+            GameManager.instance.SetJudegeUI(2).Forget();
+            GameManager.instance.SetDetailJudgeUI(actualDiff).Forget();
+            GameManager.instance.combo = 0;
+        }  
+        else if (GOOD_TIME <= diff && diff<BAD_TIME) 
+        {
+            Debug.Log("Bad");
+            GameManager.instance.SetJudegeUI(3).Forget();
+            GameManager.instance.SetDetailJudgeUI(actualDiff).Forget();
+            GameManager.instance.combo = 0;
+        }
     }
     
     public void SetNodeLine(int line)

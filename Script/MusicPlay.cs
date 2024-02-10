@@ -6,10 +6,9 @@ using UnityEngine;
 
 public class MusicPlay : MonoBehaviour
 {
-    [SerializeField] GameManager gm;
     [SerializeField] AudioClip clip;
     AudioSource audiosrc;
-    bool isPlaying = true;
+    [SerializeField] float offset;
     void Start()
     {
         audiosrc = GetComponent<AudioSource>();
@@ -17,27 +16,11 @@ public class MusicPlay : MonoBehaviour
         PlayMusic().Forget();
     }
 
-    private void Update()
-    {
-        if(Input.GetKeyDown(KeyCode.P))
-        {
-            if (isPlaying)
-            {
-                audiosrc.Pause();
-                isPlaying = false;
-            }
-
-            else
-            {
-                audiosrc.UnPause();
-                isPlaying = true;
-            }
-        }
-    }
-
     async UniTaskVoid PlayMusic()
     {
-        await UniTask.Delay(TimeSpan.FromSeconds(gm.musicWaitTime));
+        await UniTask.Delay(TimeSpan.FromSeconds(GameManager.instance.musicWaitTime - offset));
         audiosrc.Play();
     }
+
+    public void SetOffset(float offset) { this.offset = offset * 0.001f; }
 }

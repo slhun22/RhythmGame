@@ -1,24 +1,53 @@
 using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using UnityEngine;
+using TMPro;
+using Cysharp.Threading.Tasks.CompilerServices;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager instance = null;//singleton pattern instance
+
+   
     public float musicWaitTime;
-    [SerializeField] float speed;
+    public float speed;
+    public int combo { get; set; }
+    public float dist { get; set; }
     [SerializeField] GameObject nodePrefab;
     [SerializeField] Transform spawnLine;
     [SerializeField] Transform judgeLine;
+    [SerializeField] TextMeshProUGUI comboUI;
+    [SerializeField] TextMeshProUGUI judgeUI;
+    [SerializeField] TextMeshProUGUI detailJudgeUI;
+    [SerializeField] VertexGradient perfectColor;
+    [SerializeField] VertexGradient greatColor;
+    [SerializeField] VertexGradient goodColor;
+    [SerializeField] VertexGradient badColor;
+    [SerializeField] VertexGradient missColor;
+
+    
     List<NodeInfo> currentSongDatas = new List<NodeInfo>(20);//contains current songs all nodedatas by using NodeInfo class.
     string songname;
     float BPM;
-    float dist;
-
+   
     private void Awake()
     {
         Application.targetFrameRate = 60;
+
+        if(instance == null)
+        {
+            instance = this;
+        }
+
+        else
+        {
+            if (instance != this)
+                Destroy(this.gameObject);
+        }
+
     }
 
     // Start is called before the first frame update
@@ -27,34 +56,16 @@ public class GameManager : MonoBehaviour
         SetDist();
         LoadNodeData("MilkyWayGalaxyTest");
         PrepareAllNodes();
+        combo = 0;
+        judgeUI.text = "";
+        detailJudgeUI.text = "";
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        comboUI.text = combo.ToString();
     }
-    #region TestFunc
-    void LoadDataPassive()//only for test
-    {
-        NodeInfo nodeInfo1 = new NodeInfo(1, 1);
-        currentSongDatas.Add(nodeInfo1);
-        NodeInfo nodeInfo2 = new NodeInfo(2, 1.2f);
-        currentSongDatas.Add(nodeInfo2);
-        NodeInfo nodeInfo3 = new NodeInfo(3, 1.4f);
-        currentSongDatas.Add(nodeInfo3);
-        NodeInfo nodeInfo4 = new NodeInfo(4, 1.6f);
-        currentSongDatas.Add(nodeInfo4);
-        NodeInfo nodeInfo5 = new NodeInfo(2, 4f);
-        currentSongDatas.Add(nodeInfo5);
-        NodeInfo nodeInfo6 = new NodeInfo(3, 7f);
-        currentSongDatas.Add(nodeInfo6);
-        NodeInfo nodeInfo7 = new NodeInfo(1, 8f);
-        currentSongDatas.Add(nodeInfo7);
-        NodeInfo nodeInfo8 = new NodeInfo(2, 8.1f);
-        currentSongDatas.Add(nodeInfo8);
-    }
-    #endregion
     void SetDist()
     {
         dist = spawnLine.position.y - judgeLine.position.y;
@@ -94,8 +105,6 @@ public class GameManager : MonoBehaviour
             NodeInfo nodeData = currentSongDatas[i];
             GameObject node = Instantiate(nodePrefab);
             var nodeScript = node.GetComponent<Node>();
-            nodeScript.speed = speed;
-            nodeScript.dist = dist;
             nodeScript.SetNodeLine(nodeData.lineNum);
             SetNodePos(nodeScript);
             ActivateNode(nodeData.bit, node).Forget();
@@ -127,5 +136,68 @@ public class GameManager : MonoBehaviour
                 node.transform.position = spawnLine.position + new Vector3(6, 0, 0);//lane4
                 break;
         }
+    }
+
+    public async UniTaskVoid SetJudegeUI(int n)
+    {
+        switch(n)
+        {
+            case 0 :
+                judgeUI.text = "PERFECT";
+                judgeUI.colorGradient = perfectColor;
+                break;
+            case 1:
+                judgeUI.text = "GREAT";
+                judgeUI.colorGradient = greatColor;
+                break;
+            case 2:
+                judgeUI.text = "GOOD";
+                judgeUI.colorGradient = goodColor;
+                break;
+            case 3:
+                judgeUI.text = "BAD";
+                judgeUI.colorGradient = badColor;
+                break;
+            case 4:
+                judgeUI.text = "MISS";
+                judgeUI.colorGradient = missColor;
+                break;
+            default:
+                Debug.Log("Wrong number input.");
+                break;
+        }
+
+        for (int i = 1; i < 5; i++)
+        {
+            judgeUI.fontSize = 11 * i;
+            await UniTask.Delay(TimeSpan.FromMilliseconds(2));
+        }
+    }
+
+    public async UniTaskVoid SetDetailJudgeUI(float diff)
+    {
+        if (diff < 0)
+        {
+            detailJudgeUI.text = "Early";
+            detailJudgeUI.color = Color.blue;
+        }
+        else if (diff > 0)
+        {
+            detailJudgeUI.text = "Late";
+            detailJudgeUI.color = Color.red;
+        }
+        else
+            detailJudgeUI.text = "";
+
+        for (int i = 1; i < 5; i++)
+        {
+            detailJudgeUI.fontSize = 8 * i;
+            await UniTask.Delay(TimeSpan.FromMilliseconds(2));
+        }
+    }
+
+    public void ClearDetailJudge()
+    {
+        detailJudgeUI.text = "";
     }
 }
