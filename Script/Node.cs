@@ -7,32 +7,46 @@ using UnityEngine.Pool;
 
 public class Node : MonoBehaviour
 {
+    public int line { get; private set; }
+
+
+    public bool isEnd { get; private set; } // only used in LongNode
+    public bool headMode; // only used in LongNode
+
     float speed;
     float dist;
-    public int line { get; private set; }
     float timer;
     float expectedArriveTime;
     const float PERFECT_TIME = 41.7f * 0.001f;
     const float GREAT_TIME = 83.3f * 0.001f;
     const float GOOD_TIME = 108.3f * 0.001f;
     const float BAD_TIME = 125.0f * 0.001f;
+   
     void Start()
     {
+        //line = 1;
         timer = 0f;
         speed = GameManager.instance.speed;
         dist = GameManager.instance.dist;
         expectedArriveTime = dist / speed;
+        isEnd = false;
     }
 
     // Update is called once per frame
-    void Update()
+    void Update()//세부적인 타임체킹이 필요하므로 update에서 시간 돌리기
     {
         timer += Time.deltaTime;
         transform.Translate(Vector3.down * speed * Time.deltaTime);
+        if (isEnd) return;
+
         if (Input.GetKeyDown(GetNodeLaneInput()) && expectedArriveTime - timer < BAD_TIME)
         {
             nodeJudgement(timer);
-            gameObject.SetActive(false);
+
+            if (!headMode)
+                gameObject.SetActive(false);
+            else
+                isEnd = true;
         }
 
         if (timer - expectedArriveTime > BAD_TIME)
@@ -41,7 +55,10 @@ public class Node : MonoBehaviour
             GameManager.instance.SetJudegeUI(4).Forget();
             GameManager.instance.ClearDetailJudge();
             GameManager.instance.combo = 0;
-            gameObject.SetActive(false);
+            if (!headMode)
+                gameObject.SetActive(false);
+            else
+                isEnd = true;
         }
     }
     KeyCode GetNodeLaneInput()
@@ -91,7 +108,7 @@ public class Node : MonoBehaviour
             GameManager.instance.SetDetailJudgeUI(actualDiff).Forget();
             GameManager.instance.combo = 0;
         }  
-        else if (GOOD_TIME <= diff && diff<BAD_TIME) 
+        else if (GOOD_TIME <= diff && diff < BAD_TIME) 
         {
             Debug.Log("Bad");
             GameManager.instance.SetJudegeUI(3).Forget();
@@ -103,6 +120,5 @@ public class Node : MonoBehaviour
     public void SetNodeLine(int line)
     {
         this.line = line;
-    }
-    
+    }  
 }

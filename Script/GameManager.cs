@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour
     public int combo { get; set; }
     public float dist { get; set; }
     [SerializeField] GameObject nodePrefab;
+    [SerializeField] GameObject longNodePrefab;
     [SerializeField] Transform spawnLine;
     [SerializeField] Transform judgeLine;
     [SerializeField] TextMeshProUGUI comboUI;
@@ -54,12 +55,26 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         SetDist();
-        LoadNodeData("MilkyWayGalaxyTest");
-        PrepareAllNodes();
+        LongNodeTest().Forget();
+        //LoadNodeData("MilkyWayGalaxyTest");
+        //PrepareAllNodes();
         combo = 0;
         judgeUI.text = "";
         detailJudgeUI.text = "";
     }
+
+    async UniTaskVoid LongNodeTest()
+    {
+        while(true)
+        {
+            await UniTask.Delay(TimeSpan.FromSeconds(3));
+            GameObject longNodeobj = Instantiate(longNodePrefab);
+            Node headNode = longNodeobj.GetComponent<Node>();
+            headNode.SetNodeLine(1);
+            SetNodePos(headNode);
+        }
+    }
+
 
     // Update is called once per frame
     void Update()
