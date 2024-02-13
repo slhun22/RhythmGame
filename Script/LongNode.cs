@@ -5,19 +5,33 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class LongNode : MonoBehaviour //HeadNode의 자식으로 롱노트 부품을 넣기, 판정의 크기가 자식이면 다르게 적용된다. 그러면 bpm으로 length를 측정하는게 맞다
+public class LongNode : MonoBehaviour
 {
     [SerializeField] Node headNode;
-    [SerializeField] float length;
+    [SerializeField] float bitNum;
     float lastTime;
     bool timeOver;
-    float speed;
+    const float PARENT_SIZE = 0.4637f;//virtualLength = actualLength / PARENT_SIZE
     void Start()
-    {       
-        speed = GameManager.instance.speed;
-        lastTime = length / speed;
-        timeOver = false;
+    {
+        SetLongNode();
         LongJudgement().Forget();
+    }
+    private void Update()
+    {
+        LongNodeResizeByHit();
+    }
+
+    void SetLongNode()
+    {
+        float speed = GameManager.instance.speed;
+        timeOver = false;
+        float timePerBit = 60 / GameManager.instance.BPM;
+        lastTime = timePerBit * bitNum;
+        float actualLength = speed * lastTime;
+        float virtualLength = actualLength / PARENT_SIZE;
+        transform.localScale = new Vector3(1, virtualLength ,1);
+        transform.localPosition = new Vector3(0, virtualLength / 2, 0);
     }
 
     KeyCode GetNodeLaneInput()
@@ -49,28 +63,42 @@ public class LongNode : MonoBehaviour //HeadNode의 자식으로 롱노트 부품을 넣기, 
 
     async UniTaskVoid LongJudgement()
     {
-        await UniTask.WaitUntil(() => headNode.isEnd);
+        float timePerBit = 60 / GameManager.instance.BPM;
+        await UniTask.WaitUntil(() => headNode.isEnd);//head hit 전까지 대기
         Timer().Forget();
 
         while(!timeOver)
-        {
-            await UniTask.Delay(TimeSpan.FromSeconds(0.25f));
+        {        
+            await UniTask.Delay(TimeSpan.FromSeconds(timePerBit / 4));//determined by song's BPM
             if(Input.GetKey(GetNodeLaneInput()))
             {
                 Debug.Log("perfect");
-                GameManager.instance.SetJudegeUI(0).Forget();
-                GameManager.instance.ClearDetailJudge();
+                GameManager.instance.SetJudegeUI(0).Forget(); 
                 GameManager.instance.combo++;
             }
             else
             {
                 Debug.Log("MissLong");
                 GameManager.instance.SetJudegeUI(4).Forget();
-                GameManager.instance.ClearDetailJudge();
                 GameManager.instance.combo = 0;
-            }          
+            }
+            GameManager.instance.ClearDetailJudge();
         }
-
         headNode.gameObject.SetActive(false);
+    }
+
+    void LongNodeResizeByHit()//직접 보이기 때문에 자연스러움을 위해 판정과 별개로 update문에 넣어야 할듯
+    {
+        if(Input.GetKey(GetNodeLaneInput()) && headNode.isEnd)
+        {
+            const float judgeLineY = -4.0f;
+            float halfLength = transform.lossyScale.y / 2;
+            float longNodeTopY = transform.position.y + halfLength;
+            float resizeHalfLength = (longNodeTopY - judgeLineY) / 2;
+            if (resizeHalfLength < 0)
+                resizeHalfLength = 0;
+            transform.localScale = new Vector3(1, resizeHalfLength * 2 / PARENT_SIZE, 1);
+            transform.position = new Vector3(transform.position.x, judgeLineY + resizeHalfLength, 0);
+        }       
     }
 }

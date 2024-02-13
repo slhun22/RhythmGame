@@ -197,4 +197,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   headNode: {fileID: 3453511397421454733}
-  length: 30
+  bitNum: 4

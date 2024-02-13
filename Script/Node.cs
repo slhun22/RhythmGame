@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using Unity.VisualScripting;
 using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -12,6 +13,7 @@ public class Node : MonoBehaviour
 
     public bool isEnd { get; private set; } // only used in LongNode
     public bool headMode; // only used in LongNode
+    SpriteRenderer spriteRenderer; // only used in LongNode
 
     float speed;
     float dist;
@@ -29,6 +31,7 @@ public class Node : MonoBehaviour
         speed = GameManager.instance.speed;
         dist = GameManager.instance.dist;
         expectedArriveTime = dist / speed;
+        spriteRenderer = GetComponent<SpriteRenderer>();
         isEnd = false;
     }
 
@@ -46,7 +49,11 @@ public class Node : MonoBehaviour
             if (!headMode)
                 gameObject.SetActive(false);
             else
+            {
                 isEnd = true;
+                spriteRenderer.color = new Color32(0, 0, 0, 0);
+            }
+               
         }
 
         if (timer - expectedArriveTime > BAD_TIME)
@@ -58,7 +65,11 @@ public class Node : MonoBehaviour
             if (!headMode)
                 gameObject.SetActive(false);
             else
+            {
                 isEnd = true;
+                spriteRenderer.color = new Color32(0, 0, 0, 0);
+            }
+               
         }
     }
     KeyCode GetNodeLaneInput()

@@ -15,7 +15,8 @@ public class GameManager : MonoBehaviour
     public float musicWaitTime;
     public float speed;
     public int combo { get; set; }
-    public float dist { get; set; }
+    public float dist { get; private set; }
+    public float BPM { get; private set; }
     [SerializeField] GameObject nodePrefab;
     [SerializeField] GameObject longNodePrefab;
     [SerializeField] Transform spawnLine;
@@ -28,11 +29,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] VertexGradient goodColor;
     [SerializeField] VertexGradient badColor;
     [SerializeField] VertexGradient missColor;
-
     
     List<NodeInfo> currentSongDatas = new List<NodeInfo>(20);//contains current songs all nodedatas by using NodeInfo class.
     string songname;
-    float BPM;
+   
    
     private void Awake()
     {
@@ -55,6 +55,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         SetDist();
+        BPM = 120;
         LongNodeTest().Forget();
         //LoadNodeData("MilkyWayGalaxyTest");
         //PrepareAllNodes();
