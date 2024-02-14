@@ -9,16 +9,28 @@ public class LongNode : MonoBehaviour
 {
     [SerializeField] Node headNode;
     [SerializeField] float bitNum;
+    [SerializeField] Color32 missColor;
+    Color32 originalColor;
+    SpriteRenderer spriteRenderer;
     float lastTime;
+    float safeTime;
     bool timeOver;
+    bool missWarning;
+    bool safeTimeOver;
     const float PARENT_SIZE = 0.4637f;//virtualLength = actualLength / PARENT_SIZE
     void Start()
     {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        originalColor = spriteRenderer.color;
+        safeTime = 30 / GameManager.instance.BPM;
+        safeTimeOver = false;
+        missWarning = false;
         SetLongNode();
         LongJudgement().Forget();
     }
     private void Update()
     {
+        SafeTimer();
         LongNodeResizeByHit();
     }
 
@@ -60,27 +72,52 @@ public class LongNode : MonoBehaviour
         await UniTask.Delay(TimeSpan.FromSeconds(lastTime));
         timeOver = true;
     }
+    void SafeTimer() //used in update func
+    {
+        if(missWarning)
+        {
+            safeTime -= Time.deltaTime;
 
+            if (safeTime < 0)
+                safeTimeOver = true;
+        }    
+    }
     async UniTaskVoid LongJudgement()
     {
         float timePerBit = 60 / GameManager.instance.BPM;
         await UniTask.WaitUntil(() => headNode.isEnd);//head hit 전까지 대기
         Timer().Forget();
-
         while(!timeOver)
         {        
             await UniTask.Delay(TimeSpan.FromSeconds(timePerBit / 4));//determined by song's BPM
-            if(Input.GetKey(GetNodeLaneInput()))
+            if (Input.GetKey(GetNodeLaneInput()))
             {
+                missWarning = false;
+                safeTimeOver = false;
+                safeTime = timePerBit / 2;
                 Debug.Log("perfect");
-                GameManager.instance.SetJudegeUI(0).Forget(); 
+                spriteRenderer.color = originalColor;
+                GameManager.instance.SetJudegeUI(0).Forget();
                 GameManager.instance.combo++;
             }
-            else
+
+            else if (!Input.GetKey(GetNodeLaneInput()))
             {
-                Debug.Log("MissLong");
-                GameManager.instance.SetJudegeUI(4).Forget();
-                GameManager.instance.combo = 0;
+                missWarning = true;
+                spriteRenderer.color = missColor;
+                if (safeTimeOver) //miss
+                {
+                    Debug.Log("MissLong");
+                    GameManager.instance.SetJudegeUI(4).Forget();
+                    GameManager.instance.combo = 0;
+                }
+
+                else // miss safe time
+                {
+                    Debug.Log("perfect");
+                    GameManager.instance.SetJudegeUI(0).Forget();
+                    GameManager.instance.combo++;
+                }
             }
             GameManager.instance.ClearDetailJudge();
         }

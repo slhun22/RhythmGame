@@ -198,3 +198,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   headNode: {fileID: 3453511397421454733}
   bitNum: 4
+  missColor:
+    serializedVersion: 2
+    rgba: 2863048384
