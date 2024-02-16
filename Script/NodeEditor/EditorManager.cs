@@ -156,18 +156,22 @@ public class EditorManager : MonoBehaviour
     public void Save()
     {
         List<NodeInfo> nodeInfos = new List<NodeInfo>();
-        var line1Node = lineParents[0].GetComponentsInChildren<EditorNode>();
-        var line2Node = lineParents[1].GetComponentsInChildren<EditorNode>();
-        var line3Node = lineParents[2].GetComponentsInChildren<EditorNode>();
-        var line4Node = lineParents[3].GetComponentsInChildren<EditorNode>();
-
-        for(int i = 0; i < toplineNum; i++)
+        List<List<EditorNode>> lineNodesLists = new List<List<EditorNode>>();
+        for (int i = 0; i < 4; i++)
         {
-            if (line1Node[i].isSelected || line1Node[i].isLongNode) nodeInfos.Add(ExtractNodeInfo(line1Node[i]));
-            if (line2Node[i].isSelected || line2Node[i].isLongNode) nodeInfos.Add(ExtractNodeInfo(line2Node[i]));
-            if (line3Node[i].isSelected || line3Node[i].isLongNode) nodeInfos.Add(ExtractNodeInfo(line3Node[i]));
-            if (line4Node[i].isSelected || line4Node[i].isLongNode) nodeInfos.Add(ExtractNodeInfo(line4Node[i]));
+            var lineNodesList = new List<EditorNode>();
+            var lineNodes = lineParents[i].GetComponentsInChildren<EditorNode>();
+
+            for (int j = 0; j < lineNodes.Length; j++)
+                lineNodesList.Add(lineNodes[j]);
+
+            lineNodesLists.Add(lineNodesList);
         }
+
+        for(int i = 0; i < toplineNum; i++)     
+            for(int j = 0; j < 4; j++)
+                if ((lineNodesLists[j])[i].isSelected || (lineNodesLists[j])[i].isLongNode)
+                    nodeInfos.Add(ExtractNodeInfo((lineNodesLists[j])[i]));
 
         SetSongName();
         string path = string.Format("{0}/{1}.txt", Application.persistentDataPath, songName);
