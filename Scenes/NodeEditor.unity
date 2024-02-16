@@ -221,6 +221,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSelected: 0
+  isLongNode: 0
+  longBitNum: 0
 --- !u!1 &83287341
 GameObject:
   m_ObjectHideFlags: 0
@@ -296,7 +298,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0.8665495, g: 1, b: 0, a: 1}
+  m_Color: {r: 0, g: 1, b: 0.8352941, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -318,7 +320,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ed4fd0aaab53b0429cfc255e5890e78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isGreen: 0
+  isSubBit: 0
   isInitialMember: 1
 --- !u!1 &130511919
 GameObject:
@@ -418,6 +420,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSelected: 0
+  isLongNode: 0
+  longBitNum: 0
 --- !u!1 &143042307
 GameObject:
   m_ObjectHideFlags: 0
@@ -516,6 +520,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSelected: 0
+  isLongNode: 0
+  longBitNum: 0
 --- !u!1 &168922188
 GameObject:
   m_ObjectHideFlags: 0
@@ -655,6 +661,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSelected: 0
+  isLongNode: 0
+  longBitNum: 0
 --- !u!1 &197768065
 GameObject:
   m_ObjectHideFlags: 0
@@ -753,6 +761,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSelected: 0
+  isLongNode: 0
+  longBitNum: 0
 --- !u!1 &218459041
 GameObject:
   m_ObjectHideFlags: 0
@@ -963,7 +973,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0, g: 1, b: 0.2175703, a: 1}
+  m_Color: {r: 0, g: 0.03912449, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -985,7 +995,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ed4fd0aaab53b0429cfc255e5890e78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isGreen: 1
+  isSubBit: 1
   isInitialMember: 1
 --- !u!1 &257921720
 GameObject:
@@ -1085,6 +1095,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSelected: 0
+  isLongNode: 0
+  longBitNum: 0
 --- !u!1 &260218260
 GameObject:
   m_ObjectHideFlags: 0
@@ -1289,6 +1301,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSelected: 0
+  isLongNode: 0
+  longBitNum: 0
 --- !u!1 &315181211
 GameObject:
   m_ObjectHideFlags: 0
@@ -1522,6 +1536,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSelected: 0
+  isLongNode: 0
+  longBitNum: 0
 --- !u!1 &352755133
 GameObject:
   m_ObjectHideFlags: 0
@@ -1620,6 +1636,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSelected: 0
+  isLongNode: 0
+  longBitNum: 0
 --- !u!1 &377925612
 GameObject:
   m_ObjectHideFlags: 0
@@ -1718,6 +1736,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSelected: 0
+  isLongNode: 0
+  longBitNum: 0
 --- !u!1 &378729380
 GameObject:
   m_ObjectHideFlags: 0
@@ -1950,6 +1970,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSelected: 0
+  isLongNode: 0
+  longBitNum: 0
 --- !u!1 &467823772
 GameObject:
   m_ObjectHideFlags: 0
@@ -2245,6 +2267,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSelected: 0
+  isLongNode: 0
+  longBitNum: 0
 --- !u!1 &534213710
 GameObject:
   m_ObjectHideFlags: 0
@@ -2343,6 +2367,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSelected: 0
+  isLongNode: 0
+  longBitNum: 0
 --- !u!1 &535076060
 GameObject:
   m_ObjectHideFlags: 0
@@ -2575,6 +2601,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSelected: 0
+  isLongNode: 0
+  longBitNum: 0
 --- !u!1 &584379230
 GameObject:
   m_ObjectHideFlags: 0
@@ -2785,7 +2813,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0, g: 1, b: 0.2175703, a: 1}
+  m_Color: {r: 0, g: 0.039215688, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -2807,7 +2835,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ed4fd0aaab53b0429cfc255e5890e78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isGreen: 1
+  isSubBit: 1
   isInitialMember: 1
 --- !u!1 &728146818
 GameObject:
@@ -2948,6 +2976,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSelected: 0
+  isLongNode: 0
+  longBitNum: 0
 --- !u!1 &777338301
 GameObject:
   m_ObjectHideFlags: 0
@@ -3046,6 +3076,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSelected: 0
+  isLongNode: 0
+  longBitNum: 0
 --- !u!1 &785919018
 GameObject:
   m_ObjectHideFlags: 0
@@ -3121,7 +3153,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0, g: 1, b: 0.2175703, a: 1}
+  m_Color: {r: 0, g: 0.039215688, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -3143,7 +3175,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ed4fd0aaab53b0429cfc255e5890e78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isGreen: 1
+  isSubBit: 1
   isInitialMember: 1
 --- !u!1 &793810514
 GameObject:
@@ -3243,6 +3275,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSelected: 0
+  isLongNode: 0
+  longBitNum: 0
 --- !u!1 &805661468
 GameObject:
   m_ObjectHideFlags: 0
@@ -3673,6 +3707,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSelected: 0
+  isLongNode: 0
+  longBitNum: 0
 --- !u!1 &871327184
 GameObject:
   m_ObjectHideFlags: 0
@@ -3771,6 +3807,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSelected: 0
+  isLongNode: 0
+  longBitNum: 0
 --- !u!1 &878500912
 GameObject:
   m_ObjectHideFlags: 0
@@ -3869,6 +3907,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSelected: 0
+  isLongNode: 0
+  longBitNum: 0
 --- !u!1 &882040154
 GameObject:
   m_ObjectHideFlags: 0
@@ -3967,6 +4007,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSelected: 0
+  isLongNode: 0
+  longBitNum: 0
 --- !u!1 &927403970
 GameObject:
   m_ObjectHideFlags: 0
@@ -4065,6 +4107,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSelected: 0
+  isLongNode: 0
+  longBitNum: 0
 --- !u!1 &951015059
 GameObject:
   m_ObjectHideFlags: 0
@@ -4275,7 +4319,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 1, g: 0.96190935, b: 0, a: 1}
+  m_Color: {r: 0, g: 1, b: 0.8366351, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -4297,7 +4341,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ed4fd0aaab53b0429cfc255e5890e78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isGreen: 0
+  isSubBit: 0
   isInitialMember: 1
 --- !u!1 &1037737364
 GameObject:
@@ -4397,6 +4441,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSelected: 0
+  isLongNode: 0
+  longBitNum: 0
 --- !u!1 &1052978753
 GameObject:
   m_ObjectHideFlags: 0
@@ -4630,6 +4676,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSelected: 0
+  isLongNode: 0
+  longBitNum: 0
 --- !u!1 &1150689874
 GameObject:
   m_ObjectHideFlags: 0
@@ -4728,6 +4776,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSelected: 0
+  isLongNode: 0
+  longBitNum: 0
 --- !u!1 &1177602370
 GameObject:
   m_ObjectHideFlags: 0
@@ -5226,6 +5276,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSelected: 0
+  isLongNode: 0
+  longBitNum: 0
 --- !u!1 &1363860382
 GameObject:
   m_ObjectHideFlags: 0
@@ -5432,6 +5484,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSelected: 0
+  isLongNode: 0
+  longBitNum: 0
 --- !u!1 &1438671764
 GameObject:
   m_ObjectHideFlags: 0
@@ -5571,6 +5625,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSelected: 0
+  isLongNode: 0
+  longBitNum: 0
 --- !u!1 &1505022891
 GameObject:
   m_ObjectHideFlags: 0
@@ -5669,6 +5725,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSelected: 0
+  isLongNode: 0
+  longBitNum: 0
 --- !u!1 &1515693345
 GameObject:
   m_ObjectHideFlags: 0
@@ -5767,6 +5825,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSelected: 0
+  isLongNode: 0
+  longBitNum: 0
 --- !u!1 &1551498099
 GameObject:
   m_ObjectHideFlags: 0
@@ -5972,6 +6032,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSelected: 0
+  isLongNode: 0
+  longBitNum: 0
 --- !u!1 &1623447907
 GameObject:
   m_ObjectHideFlags: 0
@@ -6070,6 +6132,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSelected: 0
+  isLongNode: 0
+  longBitNum: 0
 --- !u!1 &1630643730
 GameObject:
   m_ObjectHideFlags: 0
@@ -6201,7 +6265,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b87ee2e68fa07db45b7ae913788449ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  manager: {fileID: 805661469}
   speed: 10
 --- !u!1 &1648221585
 GameObject:
@@ -6301,6 +6364,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSelected: 0
+  isLongNode: 0
+  longBitNum: 0
 --- !u!1 &1650611403
 GameObject:
   m_ObjectHideFlags: 0
@@ -6399,6 +6464,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSelected: 0
+  isLongNode: 0
+  longBitNum: 0
 --- !u!1 &1689404435
 GameObject:
   m_ObjectHideFlags: 0
@@ -6497,6 +6564,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSelected: 0
+  isLongNode: 0
+  longBitNum: 0
 --- !u!1 &1694648707
 GameObject:
   m_ObjectHideFlags: 0
@@ -6595,6 +6664,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSelected: 0
+  isLongNode: 0
+  longBitNum: 0
 --- !u!1 &1758401961
 GameObject:
   m_ObjectHideFlags: 0
@@ -6693,6 +6764,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSelected: 0
+  isLongNode: 0
+  longBitNum: 0
 --- !u!1 &1767370720
 GameObject:
   m_ObjectHideFlags: 0
@@ -6768,7 +6841,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0, g: 1, b: 0.2175703, a: 1}
+  m_Color: {r: 0, g: 0.039215688, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -6790,7 +6863,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ed4fd0aaab53b0429cfc255e5890e78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isGreen: 1
+  isSubBit: 1
   isInitialMember: 1
 --- !u!1 &1782440639
 GameObject:
@@ -7046,6 +7119,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSelected: 0
+  isLongNode: 0
+  longBitNum: 0
 --- !u!1 &1858013440
 GameObject:
   m_ObjectHideFlags: 0
@@ -7121,7 +7196,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0, g: 1, b: 0.2175703, a: 1}
+  m_Color: {r: 0, g: 0.039215688, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -7143,7 +7218,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ed4fd0aaab53b0429cfc255e5890e78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isGreen: 1
+  isSubBit: 1
   isInitialMember: 1
 --- !u!1 &1915426284
 GameObject:
@@ -7220,7 +7295,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0, g: 1, b: 0.2175703, a: 1}
+  m_Color: {r: 0, g: 0.039215688, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -7242,7 +7317,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ed4fd0aaab53b0429cfc255e5890e78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isGreen: 1
+  isSubBit: 1
   isInitialMember: 1
 --- !u!1 &1935828186
 GameObject:
@@ -7319,7 +7394,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0, g: 1, b: 0.2175703, a: 1}
+  m_Color: {r: 0, g: 0.039215688, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -7341,7 +7416,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ed4fd0aaab53b0429cfc255e5890e78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isGreen: 1
+  isSubBit: 1
   isInitialMember: 1
 --- !u!1 &2008675113
 GameObject:
@@ -7441,6 +7516,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSelected: 0
+  isLongNode: 0
+  longBitNum: 0
 --- !u!1 &2046982079
 GameObject:
   m_ObjectHideFlags: 0
@@ -7704,7 +7781,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 1, g: 0.92601705, b: 0, a: 1}
+  m_Color: {r: 0, g: 1, b: 0.8352941, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -7726,7 +7803,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ed4fd0aaab53b0429cfc255e5890e78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isGreen: 0
+  isSubBit: 0
   isInitialMember: 1
 --- !u!1 &2144974485
 GameObject:
@@ -7826,3 +7903,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSelected: 0
+  isLongNode: 0
+  longBitNum: 0

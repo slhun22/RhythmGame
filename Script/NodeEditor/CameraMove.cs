@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class CameraMove : MonoBehaviour
 {
-    [SerializeField] EditorManager manager;
     public float maxCenterY { get; set; }
     [SerializeField] float speed;
     Vector2 beforePoint = Vector2.zero;
@@ -18,7 +17,6 @@ public class CameraMove : MonoBehaviour
         maxCenterY = 0;
         chaseBeforePos = new Vector3(-1, 0, -10);
         isCameraChaseActive = false;
-        manager = GameObject.Find("EditorManager").GetComponent<EditorManager>();
     }
 
     private void Update()
@@ -54,25 +52,25 @@ public class CameraMove : MonoBehaviour
     void CameraChase()
     {
         int cameraStartPosY;
-        if(manager.isPlaying)
+        if(EditorManager.instance.isPlaying)
         {
             if(!isCameraChaseActive)
             {
                 chaseBeforePos = transform.position;
 
-                if (manager.GetMusicCheckPosition() < 0) 
+                if (EditorManager.instance.GetMusicCheckPosition() < 0) 
                     cameraStartPosY = 0;
                 else 
-                    cameraStartPosY = manager.GetMusicCheckPosition();
+                    cameraStartPosY = EditorManager.instance.GetMusicCheckPosition();
 
                 transform.position = new Vector3(-1, cameraStartPosY, -10);
                 isCameraChaseActive = true;
             }
 
-            transform.Translate(manager.GetTranslatePower());
+            transform.Translate(EditorManager.instance.GetTranslatePower());
         }
 
-        else if(!manager.isPlaying && isCameraChaseActive)
+        else if(!EditorManager.instance.isPlaying && isCameraChaseActive)
         {
             transform.position = chaseBeforePos;
             isCameraChaseActive = false;

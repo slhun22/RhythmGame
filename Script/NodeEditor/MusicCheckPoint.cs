@@ -6,12 +6,11 @@ using UnityEngine;
 public class MusicCheckPoint : MonoBehaviour
 {
     static int count = 10;
-    EditorManager manager;
     SpriteRenderer spriteRenderer;
     bool isOntheMouse;
     bool isSelected;
     float checkRange;
-    [SerializeField] bool isGreen;
+    [SerializeField] bool isSubBit;
     [SerializeField] bool isInitialMember;
 
     // Start is called before the first frame update
@@ -20,9 +19,9 @@ public class MusicCheckPoint : MonoBehaviour
         if(!isInitialMember)
         {
             if (count % 4 == 0)
-                isGreen = false;
+                isSubBit = false;
             else
-                isGreen = true;
+                isSubBit = true;
 
             count++;
         }
@@ -30,7 +29,6 @@ public class MusicCheckPoint : MonoBehaviour
         isOntheMouse = false;
         isSelected = false;
         checkRange = 0.5f;
-        manager = GameObject.Find("EditorManager").GetComponent<EditorManager>();
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
     private void Update()
@@ -62,8 +60,8 @@ public class MusicCheckPoint : MonoBehaviour
         }
         else
         {  
-            if(isGreen) spriteRenderer.color = Color.green;
-            else spriteRenderer.color = Color.yellow;
+            if(isSubBit) spriteRenderer.color = Color.blue;
+            else spriteRenderer.color = Color.cyan;
             isOntheMouse = false;
         }
     }
@@ -74,13 +72,13 @@ public class MusicCheckPoint : MonoBehaviour
             switch (isSelected)
             {
                 case true://unselect case
-                    if (isGreen) spriteRenderer.color = Color.green;
-                    else spriteRenderer.color = Color.yellow;
+                    if (isSubBit) spriteRenderer.color = Color.blue;
+                    else spriteRenderer.color = Color.cyan;
                     isSelected = false;
                     break;
                 case false://select case
-                    spriteRenderer.color = Color.blue;
-                    manager.SetMusicCheckPoint((int)transform.position.y + 4);
+                    spriteRenderer.color = Color.yellow;
+                    EditorManager.instance.SetMusicCheckPoint((int)transform.position.y + 4);
                     isSelected = true;
                     break;
             }

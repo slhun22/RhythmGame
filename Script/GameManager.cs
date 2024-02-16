@@ -101,8 +101,7 @@ public class GameManager : MonoBehaviour
             {
                 var s = nodeDatas[i];
                 string[] nodeData = s.Split(' ');
-                Debug.Log(nodeData[0] + " " + nodeData[1]);
-                NodeInfo nodeInfo = new NodeInfo(int.Parse(nodeData[0]), float.Parse(nodeData[1]));
+                NodeInfo nodeInfo = new NodeInfo(int.Parse(nodeData[0]), float.Parse(nodeData[1]), float.Parse(nodeData[2]));
                 currentSongDatas.Add(nodeInfo);
             }
         }

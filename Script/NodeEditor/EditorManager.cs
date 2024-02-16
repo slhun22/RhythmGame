@@ -12,6 +12,8 @@ using UnityEngine.UI;
 
 public class EditorManager : MonoBehaviour
 {
+    public static EditorManager instance = null;//singleton pattern instance
+
     public bool isPlaying;
     [SerializeField] CameraMove cameraMoveScript;
     [SerializeField] GameObject lineNodeObj;
@@ -29,6 +31,24 @@ public class EditorManager : MonoBehaviour
     bool isProgressBarActive;
     string songName;
     List<NodeInfo> nodeInfos = new List<NodeInfo>(2000);
+    Dictionary<GameObject, GameObject> longNodeDic = new Dictionary<GameObject, GameObject>(1000);//Caching variable for longNode set
+
+    private void Awake()
+    {
+        Application.targetFrameRate = 60;
+
+        if (instance == null)
+        {
+            instance = this;
+        }
+
+        else
+        {
+            if (instance != this)
+                Destroy(this.gameObject);
+        }
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -64,6 +84,9 @@ public class EditorManager : MonoBehaviour
     public void SetSongName() { songName = songNameInput.text; }
     public int GetMusicCheckPosition() { return musicCheckNum - 4; }//return real position of check point
     public void SetMusicCheckPoint(int y) { musicCheckNum = y; }//send position number of the check point to manager
+    public void AddLongNodeSet(GameObject startNode, GameObject endNode) { longNodeDic.Add(startNode, endNode); }
+    public void DeleteLongNodeSet(GameObject startNode) { longNodeDic.Remove(startNode); }
+    public GameObject GetLongNodeEnd(GameObject startNode) { return longNodeDic[startNode]; }
     public void MusicPlay()
     {
         if (!isPlaying)
@@ -140,10 +163,11 @@ public class EditorManager : MonoBehaviour
 
         for(int i = 0; i < toplineNum; i++)
         {
-            if (line1Node[i].isSelected) nodeInfos.Add(ExtractNodeInfo(line1Node[i]));
-            if (line2Node[i].isSelected) nodeInfos.Add(ExtractNodeInfo(line2Node[i]));
-            if (line3Node[i].isSelected) nodeInfos.Add(ExtractNodeInfo(line3Node[i]));
-            if (line4Node[i].isSelected) nodeInfos.Add(ExtractNodeInfo(line4Node[i]));
+            //save 과정에서 롱노트 detect가 잘 안됨
+            if (line1Node[i].isSelected || line1Node[i].isLongNode) nodeInfos.Add(ExtractNodeInfo(line1Node[i]));
+            if (line2Node[i].isSelected || line1Node[i].isLongNode) nodeInfos.Add(ExtractNodeInfo(line2Node[i]));
+            if (line3Node[i].isSelected || line1Node[i].isLongNode) nodeInfos.Add(ExtractNodeInfo(line3Node[i]));
+            if (line4Node[i].isSelected || line1Node[i].isLongNode) nodeInfos.Add(ExtractNodeInfo(line4Node[i]));
         }
 
         SetSongName();
@@ -156,7 +180,8 @@ public class EditorManager : MonoBehaviour
         {
             int lineNum = nodeInfos[i].lineNum;
             float bits = nodeInfos[i].bit;
-            string data = $"{lineNum} {bits}\n";
+            float longBitNum = nodeInfos[i].longBitNum;
+            string data = $"{lineNum} {bits} {longBitNum}\n";
             File.AppendAllText(path, data);
         }
     }
@@ -185,7 +210,8 @@ public class EditorManager : MonoBehaviour
 
         float editorPosY = editorNode.gameObject.transform.position.y; //-4 start
         float cumulatedBit = editorPosY / 4 + 1;
-        NodeInfo nodeInfo = new NodeInfo(lineNum, cumulatedBit);
+        float longBitNum = editorNode.longBitNum;
+        NodeInfo nodeInfo = new NodeInfo(lineNum, cumulatedBit, longBitNum);
 
         return nodeInfo;
     }
@@ -198,6 +224,7 @@ public class EditorManager : MonoBehaviour
             string[] s;
             int lineNum;
             float bit = 0;
+            float longBitNum = -1;
             float maxbit = 0;
             string[] basicData = datas[0].Split(' ');
             songName = basicData[0];
@@ -209,11 +236,12 @@ public class EditorManager : MonoBehaviour
                 s = datas[i].Split(' ');
                 lineNum = int.Parse(s[0]);
                 bit = float.Parse(s[1]);
-                nodeInfos.Add(new NodeInfo(lineNum, bit));
+                longBitNum = float.Parse(s[2]);
+                nodeInfos.Add(new NodeInfo(lineNum, bit, longBitNum));
                 if (bit > maxbit) maxbit = bit;
             }
             //(toplinenum 1) == (-4 of position y)
-            int beforeTopLineNum = (int)(bit * 4) + 1;
+            int beforeTopLineNum = (int)(maxbit * 4) + 1;
             cameraMoveScript.maxCenterY = beforeTopLineNum - 10;//automatically generate line by function "GenerateNewLine()"
         }
        
