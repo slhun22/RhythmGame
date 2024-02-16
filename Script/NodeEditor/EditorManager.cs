@@ -30,7 +30,7 @@ public class EditorManager : MonoBehaviour
     float BPM;
     bool isProgressBarActive;
     string songName;
-    List<NodeInfo> nodeInfos = new List<NodeInfo>(2000);
+    List<NodeInfo> nodeInfos = new List<NodeInfo>();
     Dictionary<GameObject, GameObject> longNodeDic = new Dictionary<GameObject, GameObject>(1000);//Caching variable for longNode set
 
     private void Awake()
@@ -155,7 +155,7 @@ public class EditorManager : MonoBehaviour
 
     public void Save()
     {
-        List<NodeInfo> nodeInfos = new List<NodeInfo>(2000);
+        List<NodeInfo> nodeInfos = new List<NodeInfo>();
         var line1Node = lineParents[0].GetComponentsInChildren<EditorNode>();
         var line2Node = lineParents[1].GetComponentsInChildren<EditorNode>();
         var line3Node = lineParents[2].GetComponentsInChildren<EditorNode>();
@@ -163,17 +163,16 @@ public class EditorManager : MonoBehaviour
 
         for(int i = 0; i < toplineNum; i++)
         {
-            //save 과정에서 롱노트 detect가 잘 안됨
             if (line1Node[i].isSelected || line1Node[i].isLongNode) nodeInfos.Add(ExtractNodeInfo(line1Node[i]));
-            if (line2Node[i].isSelected || line1Node[i].isLongNode) nodeInfos.Add(ExtractNodeInfo(line2Node[i]));
-            if (line3Node[i].isSelected || line1Node[i].isLongNode) nodeInfos.Add(ExtractNodeInfo(line3Node[i]));
-            if (line4Node[i].isSelected || line1Node[i].isLongNode) nodeInfos.Add(ExtractNodeInfo(line4Node[i]));
+            if (line2Node[i].isSelected || line2Node[i].isLongNode) nodeInfos.Add(ExtractNodeInfo(line2Node[i]));
+            if (line3Node[i].isSelected || line3Node[i].isLongNode) nodeInfos.Add(ExtractNodeInfo(line3Node[i]));
+            if (line4Node[i].isSelected || line4Node[i].isLongNode) nodeInfos.Add(ExtractNodeInfo(line4Node[i]));
         }
 
         SetSongName();
         string path = string.Format("{0}/{1}.txt", Application.persistentDataPath, songName);
         if (File.Exists(path)) File.Delete(path);
-        string basicSongData = $"{songName} {BPM}\n";
+        string basicSongData = $"{songName}\t{BPM}\n";
         File.AppendAllText(path, basicSongData);
         int length = nodeInfos.Count;
         for (int i = 0; i < length; i++)
@@ -181,7 +180,7 @@ public class EditorManager : MonoBehaviour
             int lineNum = nodeInfos[i].lineNum;
             float bits = nodeInfos[i].bit;
             float longBitNum = nodeInfos[i].longBitNum;
-            string data = $"{lineNum} {bits} {longBitNum}\n";
+            string data = $"{lineNum}\t{bits}\t{longBitNum}\n";
             File.AppendAllText(path, data);
         }
     }
@@ -223,17 +222,15 @@ public class EditorManager : MonoBehaviour
             string[] datas = File.ReadAllLines(path);
             string[] s;
             int lineNum;
-            float bit = 0;
-            float longBitNum = -1;
-            float maxbit = 0;
-            string[] basicData = datas[0].Split(' ');
+            float bit, longBitNum, maxbit = 0;
+            string[] basicData = datas[0].Split('\t');
             songName = basicData[0];
             BPM = float.Parse(basicData[1]);
             Debug.Log($"Song name : {songName}, BPM : {BPM}");
 
             for(int i = 1; i < datas.Length; i++)
             {
-                s = datas[i].Split(' ');
+                s = datas[i].Split('\t');
                 lineNum = int.Parse(s[0]);
                 bit = float.Parse(s[1]);
                 longBitNum = float.Parse(s[2]);
@@ -251,23 +248,42 @@ public class EditorManager : MonoBehaviour
         }
     }
 
-    void LoadComplete()
+    void LoadComplete()//롱노트 로딩이 이상함
     {
-        var line1Node = lineParents[0].GetComponentsInChildren<EditorNode>();
-        var line2Node = lineParents[1].GetComponentsInChildren<EditorNode>();
-        var line3Node = lineParents[2].GetComponentsInChildren<EditorNode>();
-        var line4Node = lineParents[3].GetComponentsInChildren<EditorNode>();
+        List<List<EditorNode>> lineNodesLists = new List<List<EditorNode>>();
+        for (int i = 0; i < 4; i++)
+        {
+            var lineNodesList = new List<EditorNode>();
+            var lineNodes = lineParents[i].GetComponentsInChildren<EditorNode>();
+
+            for (int j = 0; j < lineNodes.Length; j++)
+                lineNodesList.Add(lineNodes[j]);
+
+            lineNodesLists.Add(lineNodesList);
+        }
 
         for (int i = 0; i < nodeInfos.Count; i++)
         {
             int lineNum = nodeInfos[i].lineNum;
             float bit = nodeInfos[i].bit;
-            int index = (int)(bit * 4);
-            if (lineNum == 1) line1Node[index].SetNodeSelectMode();
-            else if (lineNum == 2) line2Node[index].SetNodeSelectMode();
-            else if (lineNum == 3) line3Node[index].SetNodeSelectMode();
-            else if (lineNum == 4) line4Node[index].SetNodeSelectMode();
-            else Debug.Log("Wrong lineNum");
+            float longBitNum = nodeInfos[i].longBitNum;
+            int index = (int)bit * 4;
+            int length = (int)longBitNum * 4;
+
+            if(longBitNum == -1)//normal node case
+                (lineNodesLists[lineNum - 1])[index].SetNodeSelectMode();
+           
+            else//long node case
+            {
+                var startNode = (lineNodesLists[lineNum - 1])[index].gameObject;
+                (lineNodesLists[lineNum - 1])[index].SetNodeLongNodeHead();
+
+                for (int j = 0; j < length; j++)
+                    (lineNodesLists[lineNum - 1])[++index].SetNodeLongNodeTail();
+
+                var endNode = (lineNodesLists[lineNum - 1])[index].gameObject;
+                AddLongNodeSet(startNode, endNode);
+            }            
         }
     }
 

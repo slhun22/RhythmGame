@@ -84,6 +84,18 @@ public class EditorNode : MonoBehaviour
         spriteRenderer.color = Color.blue;
         isSelected = true;
     }
+
+    public void SetNodeLongNodeHead() //for Load function in EditorManager
+    {
+        spriteRenderer.color = Color.green;
+        isLongNode = true;
+    }
+
+    public void SetNodeLongNodeTail() //for Load function in EditorManager
+    {
+        LockNode();
+    }
+
     public void SelectLongNode()
     {
         if (isOntheMouse && Input.GetMouseButtonDown(1) && !isSelected && !isLocked)

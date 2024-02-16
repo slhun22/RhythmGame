@@ -93,14 +93,14 @@ public class GameManager : MonoBehaviour
         if(File.Exists(path))
         {
             string[] nodeDatas = File.ReadAllLines(path);
-            string[] basicData = nodeDatas[0].Split(' ');
+            string[] basicData = nodeDatas[0].Split('\t');
             songname = basicData[0];
             BPM = float.Parse(basicData[1]);
             int length = nodeDatas.Length;
             for (int i = 1; i < length; i++)
             {
                 var s = nodeDatas[i];
-                string[] nodeData = s.Split(' ');
+                string[] nodeData = s.Split('\t');
                 NodeInfo nodeInfo = new NodeInfo(int.Parse(nodeData[0]), float.Parse(nodeData[1]), float.Parse(nodeData[2]));
                 currentSongDatas.Add(nodeInfo);
             }
