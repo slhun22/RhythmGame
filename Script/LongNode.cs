@@ -138,4 +138,5 @@ public class LongNode : MonoBehaviour
             transform.position = new Vector3(transform.position.x, judgeLineY + resizeHalfLength, 0);
         }       
     }
+    public void SetBitNum(float bitNum) { this.bitNum = bitNum; }
 }

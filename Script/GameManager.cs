@@ -6,6 +6,7 @@ using System.IO;
 using UnityEngine;
 using TMPro;
 using Cysharp.Threading.Tasks.CompilerServices;
+using UnityEditor.Experimental.GraphView;
 
 public class GameManager : MonoBehaviour
 {
@@ -29,6 +30,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] VertexGradient goodColor;
     [SerializeField] VertexGradient badColor;
     [SerializeField] VertexGradient missColor;
+    const float LINE1_POS_X = -4.8357f;
+    const float LINE2_POS_X = -1.6212f;
+    const float LINE3_POS_X = 1.6212f;
+    const float LINE4_POS_X = 4.8357f;
     
     List<NodeInfo> currentSongDatas = new List<NodeInfo>(20);//contains current songs all nodedatas by using NodeInfo class.
     string songname;
@@ -55,27 +60,12 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         SetDist();
-        BPM = 120;
-        LongNodeTest().Forget();
-        //LoadNodeData("MilkyWayGalaxyTest");
-        //PrepareAllNodes();
+        LoadNodeData("LongNode1");
+        PrepareAllNodes();
         combo = 0;
         judgeUI.text = "";
         detailJudgeUI.text = "";
     }
-
-    async UniTaskVoid LongNodeTest()
-    {
-        while(true)
-        {
-            await UniTask.Delay(TimeSpan.FromSeconds(3));
-            GameObject longNodeobj = Instantiate(longNodePrefab);
-            Node headNode = longNodeobj.GetComponent<Node>();
-            headNode.SetNodeLine(1);
-            SetNodePos(headNode);
-        }
-    }
-
 
     // Update is called once per frame
     void Update()
@@ -118,11 +108,20 @@ public class GameManager : MonoBehaviour
         for(int i = 0; i < length; i++)
         {
             NodeInfo nodeData = currentSongDatas[i];
-            GameObject node = Instantiate(nodePrefab);
-            var nodeScript = node.GetComponent<Node>();
+            GameObject nodeObj;
+            if (nodeData.longBitNum == -1)
+                nodeObj = Instantiate(nodePrefab);
+            else
+            {
+                nodeObj = Instantiate(longNodePrefab);
+                LongNode longNodeScript = nodeObj.GetComponentInChildren<LongNode>();
+                longNodeScript.SetBitNum(nodeData.longBitNum);
+            }
+
+            Node nodeScript = nodeObj.GetComponent<Node>();
             nodeScript.SetNodeLine(nodeData.lineNum);
             SetNodePos(nodeScript);
-            ActivateNode(nodeData.bit, node).Forget();
+            ActivateNode(nodeData.bit, nodeObj).Forget();
         }
     }
     private async UniTaskVoid ActivateNode(float bit, GameObject nodeObj)
@@ -139,16 +138,16 @@ public class GameManager : MonoBehaviour
         switch (node.line)
         {
             case 1:
-                node.transform.position = spawnLine.position + new Vector3(-6, 0, 0);//lane1
+                node.transform.position = spawnLine.position + new Vector3(LINE1_POS_X, 0, 0);//lane1
                 break;
             case 2:
-                node.transform.position = spawnLine.position + new Vector3(-2, 0, 0);//lane2
+                node.transform.position = spawnLine.position + new Vector3(LINE2_POS_X, 0, 0);//lane2
                 break;
             case 3:
-                node.transform.position = spawnLine.position + new Vector3(2, 0, 0);//lane3
+                node.transform.position = spawnLine.position + new Vector3(LINE3_POS_X, 0, 0);//lane3
                 break;
             case 4:
-                node.transform.position = spawnLine.position + new Vector3(6, 0, 0);//lane4
+                node.transform.position = spawnLine.position + new Vector3(LINE4_POS_X, 0, 0);//lane4
                 break;
         }
     }
