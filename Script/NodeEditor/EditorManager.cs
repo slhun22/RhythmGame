@@ -31,7 +31,7 @@ public class EditorManager : MonoBehaviour
     bool isProgressBarActive;
     string songName;
     List<NodeInfo> nodeInfos = new List<NodeInfo>();
-    Dictionary<GameObject, GameObject> longNodeDic = new Dictionary<GameObject, GameObject>(1000);//Caching variable for longNode set
+    Dictionary<GameObject, GameObject> longNodeDic = new Dictionary<GameObject, GameObject>(1000);//Caching container for longNode set
 
     private void Awake()
     {
@@ -220,6 +220,7 @@ public class EditorManager : MonoBehaviour
     }
     void LoadStructure()
     {
+        nodeInfos.Clear();
         string path = string.Format("{0}/{1}.txt", Application.persistentDataPath, songName);
         if(File.Exists(path))
         {
@@ -243,7 +244,7 @@ public class EditorManager : MonoBehaviour
             }
             //(toplinenum 1) == (-4 of position y)
             int beforeTopLineNum = (int)(maxbit * 4) + 1;
-            cameraMoveScript.maxCenterY = beforeTopLineNum - 10;//automatically generate line by function "GenerateNewLine()"
+            cameraMoveScript.maxCenterY = (beforeTopLineNum - 10) + 20;//automatically generate line by function "GenerateNewLine()", +20 is for longNode offset
         }
        
         else
@@ -271,8 +272,8 @@ public class EditorManager : MonoBehaviour
             int lineNum = nodeInfos[i].lineNum;
             float bit = nodeInfos[i].bit;
             float longBitNum = nodeInfos[i].longBitNum;
-            int index = (int)bit * 4;
-            int length = (int)longBitNum * 4;
+            int index = (int)(bit * 4);
+            int length = (int)(longBitNum * 4);
 
             if(longBitNum == -1)//normal node case
                 (lineNodesLists[lineNum - 1])[index].SetNodeSelectMode();
