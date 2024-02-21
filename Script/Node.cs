@@ -15,6 +15,8 @@ public class Node : MonoBehaviour
     public bool headMode; // only used in LongNode
     SpriteRenderer spriteRenderer; // only used in LongNode
 
+    public bool isSkyNode; // only used in SkyNode
+
     float speed;
     float dist;
     float timer;
@@ -78,16 +80,20 @@ public class Node : MonoBehaviour
         switch (line)
         {
             case 1:
-                laneInput = KeyCode.D;
+                if (isSkyNode) laneInput = KeyCode.E;
+                else laneInput = KeyCode.D;
                 break;
             case 2:
-                laneInput = KeyCode.F;
+                if (isSkyNode) laneInput = KeyCode.R;
+                else laneInput = KeyCode.F;
                 break;
             case 3:
-                laneInput = KeyCode.J;
+                if (isSkyNode) laneInput = KeyCode.U;
+                else laneInput = KeyCode.J;
                 break;
             case 4:
-                laneInput = KeyCode.K;
+                if (isSkyNode) laneInput = KeyCode.I;
+                else laneInput = KeyCode.K;
                 break;
         }
         return laneInput;

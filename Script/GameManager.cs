@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour
     public float BPM { get; private set; }
     [SerializeField] GameObject nodePrefab;
     [SerializeField] GameObject longNodePrefab;
+    [SerializeField] GameObject skyNodePrefab; 
     [SerializeField] Transform spawnLine;
     [SerializeField] Transform judgeLine;
     [SerializeField] TextMeshProUGUI comboUI;
@@ -34,6 +35,11 @@ public class GameManager : MonoBehaviour
     const float LINE2_POS_X = -1.6212f;
     const float LINE3_POS_X = 1.6212f;
     const float LINE4_POS_X = 4.8357f;
+    const float SKY_LINE1_POS_X = -2.85f;
+    const float SKY_LINE2_POS_X = -0.9f;
+    const float SKY_LINE3_POS_X = 0.9f;
+    const float SKY_LINE4_POS_X = 2.85f;
+    const float SKY_LINE_POS_Y = -3.0f; 
     
     List<NodeInfo> currentSongDatas = new List<NodeInfo>(20);//contains current songs all nodedatas by using NodeInfo class.
     string songname;
@@ -60,12 +66,31 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         SetDist();
-        LoadNodeData("LongNode1");
-        PrepareAllNodes();
+        SkyNodeTest().Forget();
+        //LoadNodeData("LongNode1");
+        //PrepareAllNodes();
         combo = 0;
         judgeUI.text = "";
         detailJudgeUI.text = "";
     }
+
+    private async UniTaskVoid SkyNodeTest()
+    {
+        while(true)
+        {
+            await UniTask.Delay(TimeSpan.FromSeconds(2));
+            var skyNodeObj = Instantiate(skyNodePrefab);
+            Node skyNodeScript = skyNodeObj.GetComponent<Node>();
+            skyNodeScript.SetNodeLine(2);
+            SetNodePos(skyNodeScript);
+            await UniTask.Delay(TimeSpan.FromSeconds(0.3f));
+            var nodeObj = Instantiate(nodePrefab);
+            Node nodeScript = nodeObj.GetComponent<Node>();
+            nodeScript.SetNodeLine(2);
+            SetNodePos(nodeScript);
+        }
+    }
+
 
     // Update is called once per frame
     void Update()
@@ -138,20 +163,23 @@ public class GameManager : MonoBehaviour
         switch (node.line)
         {
             case 1:
-                node.transform.position = spawnLine.position + new Vector3(LINE1_POS_X, 0, 0);//lane1
+                if(node.isSkyNode) node.transform.position = spawnLine.position + new Vector3(SKY_LINE1_POS_X, 0, SKY_LINE_POS_Y);//sky lane1
+                else node.transform.position = spawnLine.position + new Vector3(LINE1_POS_X, 0, 0);//lane1
                 break;
             case 2:
-                node.transform.position = spawnLine.position + new Vector3(LINE2_POS_X, 0, 0);//lane2
+                if (node.isSkyNode) node.transform.position = spawnLine.position + new Vector3(SKY_LINE2_POS_X, 0, SKY_LINE_POS_Y);//sky lane2
+                else node.transform.position = spawnLine.position + new Vector3(LINE2_POS_X, 0, 0);//lane2
                 break;
             case 3:
-                node.transform.position = spawnLine.position + new Vector3(LINE3_POS_X, 0, 0);//lane3
+                if (node.isSkyNode) node.transform.position = spawnLine.position + new Vector3(SKY_LINE3_POS_X, 0, SKY_LINE_POS_Y);//sky lane3
+                else node.transform.position = spawnLine.position + new Vector3(LINE3_POS_X, 0, 0);//lane3
                 break;
             case 4:
-                node.transform.position = spawnLine.position + new Vector3(LINE4_POS_X, 0, 0);//lane4
+                if (node.isSkyNode) node.transform.position = spawnLine.position + new Vector3(SKY_LINE4_POS_X, 0, SKY_LINE_POS_Y);//sky lane4
+                else node.transform.position = spawnLine.position + new Vector3(LINE4_POS_X, 0, 0);//lane4
                 break;
         }
     }
-
     public async UniTaskVoid SetJudegeUI(int n)
     {
         switch(n)
