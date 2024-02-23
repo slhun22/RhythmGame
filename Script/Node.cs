@@ -10,8 +10,9 @@ public class Node : MonoBehaviour
 {
     public int line { get; private set; }
 
-
-    public bool isEnd { get; private set; } // only used in LongNode
+  
+    public bool isEnd { get; private set; } // only used in LongNode and ArkNode
+    public bool arkMode; // only used in ArkNode
     public bool headMode; // only used in LongNode
     SpriteRenderer spriteRenderer; // only used in LongNode
 
@@ -44,35 +45,41 @@ public class Node : MonoBehaviour
         transform.Translate(Vector3.down * speed * Time.deltaTime);
         if (isEnd) return;
 
-        if (Input.GetKeyDown(GetNodeLaneInput()) && expectedArriveTime - timer < BAD_TIME)
+        if (arkMode)
         {
-            nodeJudgement(timer);
-
-            if (!headMode)
-                gameObject.SetActive(false);
-            else
-            {
+            if (expectedArriveTime - timer <= 0)
                 isEnd = true;
-                spriteRenderer.color = new Color32(0, 0, 0, 0);
-            }
-               
         }
-
-        if (timer - expectedArriveTime > BAD_TIME)
+        else
         {
-            Debug.Log("Miss");
-            GameManager.instance.SetJudegeUI(4).Forget();
-            GameManager.instance.ClearDetailJudge();
-            GameManager.instance.combo = 0;
-            if (!headMode)
-                gameObject.SetActive(false);
-            else
+            if (Input.GetKeyDown(GetNodeLaneInput()) && expectedArriveTime - timer < BAD_TIME)
             {
-                isEnd = true;
-                spriteRenderer.color = new Color32(0, 0, 0, 0);
+                nodeJudgement(timer);
+
+                if (!headMode)
+                    gameObject.SetActive(false);
+                else
+                {
+                    isEnd = true;
+                    spriteRenderer.color = new Color32(0, 0, 0, 0);
+                }
             }
-               
-        }
+
+            else if (timer - expectedArriveTime > BAD_TIME)
+            {
+                Debug.Log("Miss");
+                GameManager.instance.SetJudegeUI(4).Forget();
+                GameManager.instance.ClearDetailJudge();
+                GameManager.instance.combo = 0;
+                if (!headMode)
+                    gameObject.SetActive(false);
+                else
+                {
+                    isEnd = true;
+                    spriteRenderer.color = new Color32(0, 0, 0, 0);
+                }
+            }
+        }      
     }
     KeyCode GetNodeLaneInput()
     {

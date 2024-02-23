@@ -642,7 +642,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0.6745098, g: 0.82735944, b: 1, a: 0.08627451}
+  m_Color: {r: 0, g: 0.47058824, b: 1, a: 0.0627451}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -1941,6 +1941,7 @@ MonoBehaviour:
   nodePrefab: {fileID: 5040339049584434973, guid: d2d8eeda6097ff244a0a90db69521487, type: 3}
   longNodePrefab: {fileID: 3373294919143377147, guid: 9dece51970a6a334fa7e8c8ee49dc1bd, type: 3}
   skyNodePrefab: {fileID: 7603514887834412953, guid: bbda185985968dd42a1b2802cee48c05, type: 3}
+  arkNodePrefab: {fileID: 886977070753750625, guid: 4cb2b45417b9c3045b585af52a1bb4f2, type: 3}
   spawnLine: {fileID: 538897336}
   judgeLine: {fileID: 1857252105}
   comboUI: {fileID: 1460180557}

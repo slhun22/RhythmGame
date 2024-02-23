@@ -1,8 +1,5 @@
 using Cysharp.Threading.Tasks;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class LongNode : MonoBehaviour
@@ -10,8 +7,11 @@ public class LongNode : MonoBehaviour
     [SerializeField] Node headNode;
     [SerializeField] float bitNum;
     [SerializeField] Color32 missColor;
+    [SerializeField] Material missMat;
     Color32 originalColor;
+    Material originalMat;
     SpriteRenderer spriteRenderer;
+    MeshRenderer meshRenderer;
     float lastTime;
     float safeTime;
     bool timeOver;
@@ -20,8 +20,16 @@ public class LongNode : MonoBehaviour
     const float PARENT_SIZE = 0.4637f;//virtualLength = actualLength / PARENT_SIZE
     void Start()
     {
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        originalColor = spriteRenderer.color;
+        if (headNode.isSkyNode)
+        {
+            meshRenderer = GetComponent<MeshRenderer>();
+            originalMat = meshRenderer.material;
+        }          
+        else
+        {
+            spriteRenderer = GetComponent<SpriteRenderer>();
+            originalColor = spriteRenderer.color;
+        }      
         safeTime = 30 / GameManager.instance.BPM;
         safeTimeOver = false;
         missWarning = false;
@@ -31,7 +39,10 @@ public class LongNode : MonoBehaviour
     private void Update()
     {
         SafeTimer();
-        LongNodeResizeByHit();
+        if (headNode.isSkyNode)
+            ArkNodeResizeByHit();
+        else
+            LongNodeResizeByHit();
     }
 
     void SetLongNode()
@@ -41,7 +52,12 @@ public class LongNode : MonoBehaviour
         float timePerBit = 60 / GameManager.instance.BPM;
         lastTime = timePerBit * bitNum;
         float actualLength = speed * lastTime;
-        float virtualLength = actualLength / PARENT_SIZE;
+        float virtualLength;
+        if(headNode.isSkyNode) 
+            virtualLength = actualLength;
+        else
+            virtualLength = actualLength / PARENT_SIZE;
+
         transform.localScale = new Vector3(1, virtualLength ,1);
         transform.localPosition = new Vector3(0, virtualLength / 2, 0);
     }
@@ -52,16 +68,20 @@ public class LongNode : MonoBehaviour
         switch (headNode.line)
         {
             case 1:
-                laneInput = KeyCode.D;
+                if (headNode.isSkyNode) laneInput = KeyCode.E;
+                else laneInput = KeyCode.D;
                 break;
             case 2:
-                laneInput = KeyCode.F;
+                if (headNode.isSkyNode) laneInput = KeyCode.R;
+                else laneInput = KeyCode.F;
                 break;
             case 3:
-                laneInput = KeyCode.J;
+                if (headNode.isSkyNode) laneInput = KeyCode.U;
+                else laneInput = KeyCode.J;
                 break;
             case 4:
-                laneInput = KeyCode.K;
+                if (headNode.isSkyNode) laneInput = KeyCode.I;
+                else laneInput = KeyCode.K;
                 break;
         }
         return laneInput;
@@ -94,9 +114,14 @@ public class LongNode : MonoBehaviour
             {
                 missWarning = false;
                 safeTimeOver = false;
-                safeTime = timePerBit / 2;
+                safeTime = timePerBit / 3;
                 Debug.Log("perfect");
-                spriteRenderer.color = originalColor;
+
+                if (headNode.isSkyNode)
+                meshRenderer.material = originalMat;
+                else
+                    spriteRenderer.color = originalColor;
+
                 GameManager.instance.SetJudegeUI(0).Forget();
                 GameManager.instance.combo++;
             }
@@ -104,7 +129,12 @@ public class LongNode : MonoBehaviour
             else if (!Input.GetKey(GetNodeLaneInput()))
             {
                 missWarning = true;
-                spriteRenderer.color = missColor;
+
+                if (headNode.isSkyNode)
+                    meshRenderer.material = missMat;
+                else
+                    spriteRenderer.color = missColor;
+     
                 if (safeTimeOver) //miss
                 {
                     Debug.Log("MissLong");
@@ -137,6 +167,20 @@ public class LongNode : MonoBehaviour
             transform.localScale = new Vector3(1, resizeHalfLength * 2 / PARENT_SIZE, 1);
             transform.position = new Vector3(transform.position.x, judgeLineY + resizeHalfLength, 0);
         }       
+    }
+    void ArkNodeResizeByHit()
+    {
+        if(Input.GetKey(GetNodeLaneInput()) && headNode.isEnd)
+        {
+            const float judgeLineY = -4.0f;
+            float halfLength = transform.lossyScale.y / 2;
+            float longNodeTopY = transform.position.y + halfLength;
+            float resizeHalfLength = (longNodeTopY - judgeLineY) / 2;
+            if (resizeHalfLength < 0)
+                resizeHalfLength = 0;
+            transform.localScale = new Vector3(1, resizeHalfLength * 2, 1);
+            transform.position = new Vector3(transform.position.x, judgeLineY + resizeHalfLength, -3);
+        }
     }
     public void SetBitNum(float bitNum) { this.bitNum = bitNum; }
 }

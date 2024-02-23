@@ -20,7 +20,8 @@ public class GameManager : MonoBehaviour
     public float BPM { get; private set; }
     [SerializeField] GameObject nodePrefab;
     [SerializeField] GameObject longNodePrefab;
-    [SerializeField] GameObject skyNodePrefab; 
+    [SerializeField] GameObject skyNodePrefab;
+    [SerializeField] GameObject arkNodePrefab;
     [SerializeField] Transform spawnLine;
     [SerializeField] Transform judgeLine;
     [SerializeField] TextMeshProUGUI comboUI;
@@ -66,7 +67,8 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         SetDist();
-        SkyNodeTest().Forget();
+        BPM = 120;
+        ArkNodeTest().Forget();
         //LoadNodeData("LongNode1");
         //PrepareAllNodes();
         combo = 0;
@@ -74,20 +76,15 @@ public class GameManager : MonoBehaviour
         detailJudgeUI.text = "";
     }
 
-    private async UniTaskVoid SkyNodeTest()
+    private async UniTaskVoid ArkNodeTest()
     {
         while(true)
         {
             await UniTask.Delay(TimeSpan.FromSeconds(2));
-            var skyNodeObj = Instantiate(skyNodePrefab);
-            Node skyNodeScript = skyNodeObj.GetComponent<Node>();
-            skyNodeScript.SetNodeLine(2);
-            SetNodePos(skyNodeScript);
-            await UniTask.Delay(TimeSpan.FromSeconds(0.3f));
-            var nodeObj = Instantiate(nodePrefab);
-            Node nodeScript = nodeObj.GetComponent<Node>();
-            nodeScript.SetNodeLine(2);
-            SetNodePos(nodeScript);
+            var arkNodeObj = Instantiate(arkNodePrefab);
+            Node arkNodeScript = arkNodeObj.GetComponent<Node>();
+            arkNodeScript.SetNodeLine(2);
+            SetNodePos(arkNodeScript);
         }
     }
 
