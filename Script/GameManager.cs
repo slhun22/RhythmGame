@@ -22,6 +22,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject longNodePrefab;
     [SerializeField] GameObject skyNodePrefab;
     [SerializeField] GameObject arkNodePrefab;
+    [SerializeField] List<GameObject> longNodeHitVFXs;
+    [SerializeField] List<GameObject> arkNodeHitVFXs;
     [SerializeField] Transform spawnLine;
     [SerializeField] Transform judgeLine;
     [SerializeField] TextMeshProUGUI comboUI;
@@ -238,5 +240,22 @@ public class GameManager : MonoBehaviour
     public void ClearDetailJudge()
     {
         detailJudgeUI.text = "";
+    }
+
+    public void VFXOn(int lineNum, bool isSkyNode)
+    {
+        if (isSkyNode)
+            arkNodeHitVFXs[lineNum - 1].SetActive(true);
+
+        else
+            longNodeHitVFXs[lineNum - 1].SetActive(true);
+    }
+    public void VFXOff(int lineNum, bool isSkyNode)
+    {
+        if (isSkyNode)
+            arkNodeHitVFXs[lineNum - 1].SetActive(false);
+
+        else
+            longNodeHitVFXs[lineNum - 1].SetActive(false);
     }
 }

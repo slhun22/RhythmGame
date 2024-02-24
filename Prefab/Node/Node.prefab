@@ -97,4 +97,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a28237eaa3cb50c4bad8994172b291a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  arkMode: 0
   headMode: 0
+  isSkyNode: 0
+  hitVFX: {fileID: 4718554385681144204, guid: e4922f36398438148a9fe5a7e15b4e38, type: 3}

@@ -1,0 +1,92 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7544337675754571506
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7544337675754571504}
+  - component: {fileID: 7544337675754571507}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7544337675754571504
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7544337675754571506}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.3312832, y: -4.696283, z: -2.6693554}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 13
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7544337675754571507
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7544337675754571506}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45d1e02dd89855e4a9fff16b8672729e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  musicWaitTime: 3
+  speed: 30
+  nodePrefab: {fileID: 5040339049584434973, guid: d2d8eeda6097ff244a0a90db69521487, type: 3}
+  longNodePrefab: {fileID: 3373294919143377147, guid: 9dece51970a6a334fa7e8c8ee49dc1bd, type: 3}
+  skyNodePrefab: {fileID: 7603514887834412953, guid: bbda185985968dd42a1b2802cee48c05, type: 3}
+  arkNodePrefab: {fileID: 886977070753750625, guid: 4cb2b45417b9c3045b585af52a1bb4f2, type: 3}
+  longNodeHitVFXs:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  arkNodeHitVFXs:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  spawnLine: {fileID: 0}
+  judgeLine: {fileID: 0}
+  comboUI: {fileID: 0}
+  judgeUI: {fileID: 0}
+  detailJudgeUI: {fileID: 0}
+  perfectColor:
+    topLeft: {r: 0, g: 0.16078432, b: 1, a: 1}
+    topRight: {r: 0, g: 0.16078432, b: 1, a: 1}
+    bottomLeft: {r: 0.42352942, g: 0.23137255, b: 1, a: 1}
+    bottomRight: {r: 0.42352942, g: 0.23137255, b: 1, a: 1}
+  greatColor:
+    topLeft: {r: 1, g: 0, b: 0.91764706, a: 1}
+    topRight: {r: 1, g: 0, b: 0.91764706, a: 1}
+    bottomLeft: {r: 0, g: 0.7176471, b: 0.83137256, a: 1}
+    bottomRight: {r: 0, g: 0.7176471, b: 0.83137256, a: 1}
+  goodColor:
+    topLeft: {r: 0, g: 1, b: 0, a: 1}
+    topRight: {r: 0, g: 1, b: 0, a: 1}
+    bottomLeft: {r: 0.3882353, g: 0.4509804, b: 0, a: 1}
+    bottomRight: {r: 0.3882353, g: 0.4509804, b: 0, a: 1}
+  badColor:
+    topLeft: {r: 1, g: 0, b: 0.05490196, a: 1}
+    topRight: {r: 1, g: 0, b: 0.05490196, a: 1}
+    bottomLeft: {r: 1, g: 0.18431373, b: 0.09019608, a: 1}
+    bottomRight: {r: 1, g: 0.18431373, b: 0.09019608, a: 1}
+  missColor:
+    topLeft: {r: 0, g: 0, b: 0, a: 1}
+    topRight: {r: 0, g: 0, b: 0, a: 1}
+    bottomLeft: {r: 0.1882353, g: 0.16078432, b: 0.16078432, a: 1}
+    bottomRight: {r: 0.1882353, g: 0.16078432, b: 0.16078432, a: 1}

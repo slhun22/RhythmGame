@@ -1,4 +1,4 @@
-/*
+
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -7,77 +7,48 @@ using UnityEngine.PlayerLoop;
 using UnityEngine.Pool;
 public class ObjectPool : MonoBehaviour
 {
-    [SerializeField] Node _nodePrefab;
-    IObjectPool<Node> _nodePool;
-    float _time;
+    public static ObjectPool instance = null;//singleton pattern instance
+    public IObjectPool<GameObject> pool;
+    [SerializeField] GameObject hitVFXPrefab;
     private void Awake()
     {
-        _nodePool = new ObjectPool<Node>(
-            createNode,
-            onGetNode,
-            onReleaseNode,
-            onDestroyNode,
-            maxSize: 40
+        if (instance == null)
+        {
+            instance = this;
+        }
+
+        else
+        {
+            if (instance != this)
+                Destroy(this.gameObject);
+        }
+
+        pool = new ObjectPool<GameObject>(
+            CreateVFX,
+            OnGetVFX,
+            OnReleaseVFX,
+            OnDestroyVFX,
+            maxSize: 30
             );
-
-        _time = 0;
     }
 
-    Node createNode()
+    GameObject CreateVFX()
     {
-        Node node = Instantiate(_nodePrefab);
-        return node;
+        GameObject vfxObj = Instantiate(hitVFXPrefab);
+        return vfxObj;
     }
 
-    void onGetNode(Node node)
+    void OnGetVFX(GameObject vfxObj)
     {
-        node.gameObject.SetActive(true);
+        vfxObj.SetActive(true);
     }
-    void onReleaseNode(Node node)
+    void OnReleaseVFX(GameObject vfxObj)
     {
-        node.gameObject.SetActive(false);
+        vfxObj.SetActive(false);
     }
     
-    void onDestroyNode(Node node)
+    void OnDestroyVFX(GameObject vfxObj)
     {
-        Destroy(node.gameObject);
-    }
-
-    private void Update()
-    {
-        if (_time > 2)
-        {
-            var node = _nodePool.Get();
-            setNodePos(node);
-            _time = 0;
-        }
-
-        else _time += Time.deltaTime;
-    }
-
-    void setNodePos(Node node)//이 역할을 수행하는 getinfo함수가 필요
-    {
-        int line = Random.Range(1, 5);
-        switch (line)
-        {
-            case 1:
-                node.transform.position = transform.position + new Vector3(-6, 0, 0);//라인1
-                break;
-            case 2:
-                node.transform.position = transform.position + new Vector3(-2, 0, 0);//라인2
-                break;
-            case 3:
-                node.transform.position = transform.position + new Vector3(2, 0, 0);//라인3
-                break;
-            case 4:
-                node.transform.position = transform.position + new Vector3(6, 0, 0);//라인4
-                break;
-        }
-    }
-
-    void GetNodeInfo(NodeInfo nodeData)//pool을 쓰면 안될 것 같다. 그냥 처음에 한꺼번에 로드하는 방식으로 해야할듯
-    {
-       
+        Destroy(vfxObj);
     }
 }
-*/

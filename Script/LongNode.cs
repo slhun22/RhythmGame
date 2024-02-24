@@ -122,6 +122,7 @@ public class LongNode : MonoBehaviour
                 else
                     spriteRenderer.color = originalColor;
 
+                GameManager.instance.VFXOn(headNode.line, headNode.isSkyNode);
                 GameManager.instance.SetJudegeUI(0).Forget();
                 GameManager.instance.combo++;
             }
@@ -137,6 +138,7 @@ public class LongNode : MonoBehaviour
      
                 if (safeTimeOver) //miss
                 {
+                    GameManager.instance.VFXOff(headNode.line, headNode.isSkyNode);
                     Debug.Log("MissLong");
                     GameManager.instance.SetJudegeUI(4).Forget();
                     GameManager.instance.combo = 0;
@@ -151,6 +153,7 @@ public class LongNode : MonoBehaviour
             }
             GameManager.instance.ClearDetailJudge();
         }
+        GameManager.instance.VFXOff(headNode.line, headNode.isSkyNode);
         headNode.gameObject.SetActive(false);
     }
 
