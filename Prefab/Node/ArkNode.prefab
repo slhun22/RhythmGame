@@ -97,7 +97,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   headNode: {fileID: 886977070753750630}
-  bitNum: 2
+  bitNum: 4
   missColor:
     serializedVersion: 2
     rgba: 0

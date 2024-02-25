@@ -5,8 +5,8 @@ using System.ComponentModel;
 using System.IO;
 using UnityEngine;
 using TMPro;
-using Cysharp.Threading.Tasks.CompilerServices;
-using UnityEditor.Experimental.GraphView;
+using DG.Tweening;
+using Random = UnityEngine.Random;
 
 public class GameManager : MonoBehaviour
 {
@@ -18,6 +18,7 @@ public class GameManager : MonoBehaviour
     public int combo { get; set; }
     public float dist { get; private set; }
     public float BPM { get; private set; }
+    [SerializeField] GameObject laneStructure;
     [SerializeField] GameObject nodePrefab;
     [SerializeField] GameObject longNodePrefab;
     [SerializeField] GameObject skyNodePrefab;
@@ -82,10 +83,10 @@ public class GameManager : MonoBehaviour
     {
         while(true)
         {
-            await UniTask.Delay(TimeSpan.FromSeconds(2));
+            await UniTask.Delay(TimeSpan.FromSeconds(1));
             var arkNodeObj = Instantiate(arkNodePrefab);
             Node arkNodeScript = arkNodeObj.GetComponent<Node>();
-            arkNodeScript.SetNodeLine(2);
+            arkNodeScript.SetNodeLine(Random.Range(1, 5));
             SetNodePos(arkNodeScript);
         }
     }
@@ -134,10 +135,10 @@ public class GameManager : MonoBehaviour
             NodeInfo nodeData = currentSongDatas[i];
             GameObject nodeObj;
             if (nodeData.longBitNum == -1)
-                nodeObj = Instantiate(nodePrefab);
+                nodeObj = Instantiate(nodePrefab, laneStructure.transform);
             else
             {
-                nodeObj = Instantiate(longNodePrefab);
+                nodeObj = Instantiate(longNodePrefab, laneStructure.transform);
                 LongNode longNodeScript = nodeObj.GetComponentInChildren<LongNode>();
                 longNodeScript.SetBitNum(nodeData.longBitNum);
             }
@@ -245,7 +246,11 @@ public class GameManager : MonoBehaviour
     public void VFXOn(int lineNum, bool isSkyNode)
     {
         if (isSkyNode)
+        {
             arkNodeHitVFXs[lineNum - 1].SetActive(true);
+            laneStructure.transform.DORotate(new Vector3(0, GetTiltState(), 0), 0.4f);//아크노트 플레인 기울임 연출 코드임
+        }
+           
 
         else
             longNodeHitVFXs[lineNum - 1].SetActive(true);
@@ -253,9 +258,23 @@ public class GameManager : MonoBehaviour
     public void VFXOff(int lineNum, bool isSkyNode)
     {
         if (isSkyNode)
+        {
             arkNodeHitVFXs[lineNum - 1].SetActive(false);
+            laneStructure.transform.DORotate(new Vector3(0, GetTiltState(), 0), 0.4f);//아크노트 플레인 기울임 연출 코드임
+        }
+           
 
         else
             longNodeHitVFXs[lineNum - 1].SetActive(false);
+    }
+    int GetTiltState()
+    {
+        int result = 0;
+        if (arkNodeHitVFXs[0].activeSelf) result += 2;
+        if (arkNodeHitVFXs[1].activeSelf) result += 1;
+        if (arkNodeHitVFXs[2].activeSelf) result -= 1;
+        if (arkNodeHitVFXs[3].activeSelf) result -= 2;
+
+        return result;
     }
 }
