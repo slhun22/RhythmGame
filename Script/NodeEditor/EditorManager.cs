@@ -19,7 +19,7 @@ public class EditorManager : MonoBehaviour
     [SerializeField] GameObject lineNodeObj;
     [SerializeField] GameObject musicCheckPointObj;
     [SerializeField] GameObject progressBarObj;
-    [SerializeField] List<Transform> lineParents = new List<Transform>(4);
+    [SerializeField] List<Transform> lineParents = new List<Transform>(8);
     [SerializeField] int toplineNum;//1 start
     [SerializeField] int musicCheckNum;//0 start
     [SerializeField] TMP_InputField songNameInput;
@@ -72,11 +72,17 @@ public class EditorManager : MonoBehaviour
         int expectedTopLineNum = (int)cameraMoveScript.maxCenterY + 10;
         while (expectedTopLineNum > toplineNum)
         {
-            Instantiate(lineNodeObj, new Vector3(-7, toplineNum - 4, 0), Quaternion.identity, lineParents[0]);
-            Instantiate(lineNodeObj, new Vector3(-3, toplineNum - 4, 0), Quaternion.identity, lineParents[1]);
-            Instantiate(lineNodeObj, new Vector3(1, toplineNum - 4, 0), Quaternion.identity, lineParents[2]);
-            Instantiate(lineNodeObj, new Vector3(5, toplineNum - 4, 0), Quaternion.identity, lineParents[3]);
-            Instantiate(musicCheckPointObj, new Vector3(-9.5f, toplineNum - 4, 0), Quaternion.identity, lineParents[4]);
+            Instantiate(lineNodeObj, new Vector3(-8, toplineNum - 4, 0), Quaternion.identity, lineParents[0]);
+            Instantiate(lineNodeObj, new Vector3(-6, toplineNum - 4, 0), Quaternion.identity, lineParents[1]);
+            Instantiate(lineNodeObj, new Vector3(-4, toplineNum - 4, 0), Quaternion.identity, lineParents[2]);
+            Instantiate(lineNodeObj, new Vector3(-2, toplineNum - 4, 0), Quaternion.identity, lineParents[3]);
+
+            Instantiate(lineNodeObj, new Vector3(0.5f, toplineNum - 4, 0), Quaternion.identity, lineParents[4]);
+            Instantiate(lineNodeObj, new Vector3(2.5f, toplineNum - 4, 0), Quaternion.identity, lineParents[5]);
+            Instantiate(lineNodeObj, new Vector3(4.5f, toplineNum - 4, 0), Quaternion.identity, lineParents[6]);
+            Instantiate(lineNodeObj, new Vector3(6.5f, toplineNum - 4, 0), Quaternion.identity, lineParents[7]);
+
+            Instantiate(musicCheckPointObj, new Vector3(-9.5f, toplineNum - 4, 0), Quaternion.identity, lineParents[8]);
             toplineNum++;
         }
     }
@@ -157,7 +163,7 @@ public class EditorManager : MonoBehaviour
     {
         List<NodeInfo> nodeInfos = new List<NodeInfo>();
         List<List<EditorNode>> lineNodesLists = new List<List<EditorNode>>();
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 8; i++)
         {
             var lineNodesList = new List<EditorNode>();
             var lineNodes = lineParents[i].GetComponentsInChildren<EditorNode>();
@@ -169,7 +175,7 @@ public class EditorManager : MonoBehaviour
         }
 
         for(int i = 0; i < toplineNum; i++)     
-            for(int j = 0; j < 4; j++)
+            for(int j = 0; j < 8; j++)
                 if ((lineNodesLists[j])[i].isSelected || (lineNodesLists[j])[i].isLongNode)
                     nodeInfos.Add(ExtractNodeInfo((lineNodesLists[j])[i]));
 
@@ -181,40 +187,33 @@ public class EditorManager : MonoBehaviour
         int length = nodeInfos.Count;
         for (int i = 0; i < length; i++)
         {
+            bool isSkyNode = nodeInfos[i].isSkyNode;
             int lineNum = nodeInfos[i].lineNum;
             float bits = nodeInfos[i].bit;
             float longBitNum = nodeInfos[i].longBitNum;
-            string data = $"{lineNum}\t{bits}\t{longBitNum}\n";
+            string data = $"{isSkyNode}\t{lineNum}\t{bits}\t{longBitNum}\n";
             File.AppendAllText(path, data);
         }
     }
 
     NodeInfo ExtractNodeInfo(EditorNode editorNode)
     {
-        int lineNum = 0;
-        switch ((int)editorNode.gameObject.transform.position.x)
-        {
-            case -7:
-                lineNum = 1;
-                break;
-            case -3:
-                lineNum = 2;
-                break;
-            case 1:
-                lineNum = 3;
-                break;
-            case 5:
-                lineNum = 4;
-                break;
-            default:
-                Debug.Log("Wrong lineNum position detected!!");
-                break;
-        }
+        int lineNum = 0;       
+        float nodePosX = editorNode.gameObject.transform.position.x;
+
+        bool isSkyNode = false;
+        if (nodePosX > 0) 
+            isSkyNode = true;
+
+        if (nodePosX == -8 || nodePosX == 0.5f) lineNum = 1;
+        if (nodePosX == -6 || nodePosX == 2.5f) lineNum = 2;
+        if (nodePosX == -4 || nodePosX == 4.5f) lineNum = 3;
+        if (nodePosX == -2 || nodePosX == 6.5f) lineNum = 4;
 
         float editorPosY = editorNode.gameObject.transform.position.y; //-4 start
         float cumulatedBit = editorPosY / 4 + 1;
         float longBitNum = editorNode.longBitNum;
-        NodeInfo nodeInfo = new NodeInfo(lineNum, cumulatedBit, longBitNum);
+        NodeInfo nodeInfo = new NodeInfo(isSkyNode, lineNum, cumulatedBit, longBitNum);
 
         return nodeInfo;
     }
@@ -227,19 +226,21 @@ public class EditorManager : MonoBehaviour
             string[] datas = File.ReadAllLines(path);
             string[] s;
             int lineNum;
+            bool isSkyNode;
             float bit, longBitNum, maxbit = 0;
             string[] basicData = datas[0].Split('\t');
             songName = basicData[0];
             BPM = float.Parse(basicData[1]);
             Debug.Log($"Song name : {songName}, BPM : {BPM}");
-
-            for(int i = 1; i < datas.Length; i++)
+            int length = datas.Length;
+            for(int i = 1; i < length; i++)
             {
                 s = datas[i].Split('\t');
-                lineNum = int.Parse(s[0]);
-                bit = float.Parse(s[1]);
-                longBitNum = float.Parse(s[2]);
-                nodeInfos.Add(new NodeInfo(lineNum, bit, longBitNum));
+                isSkyNode = bool.Parse(s[0]);
+                lineNum = int.Parse(s[1]);
+                bit = float.Parse(s[2]);
+                longBitNum = float.Parse(s[3]);
+                nodeInfos.Add(new NodeInfo(isSkyNode, lineNum, bit, longBitNum));
                 if (bit > maxbit) maxbit = bit;
             }
             //(toplinenum 1) == (-4 of position y)
@@ -253,10 +254,10 @@ public class EditorManager : MonoBehaviour
         }
     }
 
-    void LoadComplete()//롱노트 로딩이 이상함
+    void LoadComplete()
     {
         List<List<EditorNode>> lineNodesLists = new List<List<EditorNode>>();
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 8; i++)
         {
             var lineNodesList = new List<EditorNode>();
             var lineNodes = lineParents[i].GetComponentsInChildren<EditorNode>();
@@ -267,26 +268,31 @@ public class EditorManager : MonoBehaviour
             lineNodesLists.Add(lineNodesList);
         }
 
-        for (int i = 0; i < nodeInfos.Count; i++)
+        int length = nodeInfos.Count;
+        for (int i = 0; i < length; i++)
         {
+            bool isSkyNode = nodeInfos[i].isSkyNode;
             int lineNum = nodeInfos[i].lineNum;
             float bit = nodeInfos[i].bit;
             float longBitNum = nodeInfos[i].longBitNum;
             int index = (int)(bit * 4);
-            int length = (int)(longBitNum * 4);
+            int nodeLength = (int)(longBitNum * 4);
+            int skyOffset = 0;
+            if (isSkyNode)
+                skyOffset = 4;
 
             if(longBitNum == -1)//normal node case
-                (lineNodesLists[lineNum - 1])[index].SetNodeSelectMode();
+                (lineNodesLists[lineNum - 1 + skyOffset])[index].SetNodeSelectMode();
            
             else//long node case
             {
-                var startNode = (lineNodesLists[lineNum - 1])[index].gameObject;
+                var startNode = (lineNodesLists[lineNum - 1 + skyOffset])[index].gameObject;
                 (lineNodesLists[lineNum - 1])[index].SetNodeLongNodeHead();
 
-                for (int j = 0; j < length; j++)
-                    (lineNodesLists[lineNum - 1])[++index].SetNodeLongNodeTail();
+                for (int j = 0; j < nodeLength; j++)
+                    (lineNodesLists[lineNum - 1 + skyOffset])[++index].SetNodeLongNodeTail();
 
-                var endNode = (lineNodesLists[lineNum - 1])[index].gameObject;
+                var endNode = (lineNodesLists[lineNum - 1 + skyOffset])[index].gameObject;
                 AddLongNodeSet(startNode, endNode);
             }            
         }

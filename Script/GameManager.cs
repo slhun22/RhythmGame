@@ -18,13 +18,17 @@ public class GameManager : MonoBehaviour
     public int combo { get; set; }
     public float dist { get; private set; }
     public float BPM { get; private set; }
+
+    public readonly List<Vector3> groundLineVecs = new List<Vector3>();
+    public readonly List<Vector3> skyLineVecs = new List<Vector3>();
+
     [SerializeField] GameObject laneStructure;
     [SerializeField] GameObject nodePrefab;
     [SerializeField] GameObject longNodePrefab;
     [SerializeField] GameObject skyNodePrefab;
     [SerializeField] GameObject arkNodePrefab;
-    [SerializeField] List<GameObject> longNodeHitVFXs;
-    [SerializeField] List<GameObject> arkNodeHitVFXs;
+    [SerializeField] List<GameObject> longNodeHitVFX;
+    [SerializeField] List<GameObject> arkNodeHitVFX;
     [SerializeField] Transform spawnLine;
     [SerializeField] Transform judgeLine;
     [SerializeField] TextMeshProUGUI comboUI;
@@ -34,21 +38,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] VertexGradient greatColor;
     [SerializeField] VertexGradient goodColor;
     [SerializeField] VertexGradient badColor;
-    [SerializeField] VertexGradient missColor;
-    const float LINE1_POS_X = -4.8357f;
-    const float LINE2_POS_X = -1.6212f;
-    const float LINE3_POS_X = 1.6212f;
-    const float LINE4_POS_X = 4.8357f;
-    const float SKY_LINE1_POS_X = -2.85f;
-    const float SKY_LINE2_POS_X = -0.9f;
-    const float SKY_LINE3_POS_X = 0.9f;
-    const float SKY_LINE4_POS_X = 2.85f;
-    const float SKY_LINE_POS_Y = -3.0f; 
-    
+    [SerializeField] VertexGradient missColor;  
     List<NodeInfo> currentSongDatas = new List<NodeInfo>(20);//contains current songs all nodedatas by using NodeInfo class.
     string songname;
-   
-   
+     
     private void Awake()
     {
         Application.targetFrameRate = 60;
@@ -69,11 +62,12 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        SetDist();
-        BPM = 120;
-        ArkNodeTest().Forget();
-        //LoadNodeData("LongNode1");
-        //PrepareAllNodes();
+        dist = spawnLine.position.y - judgeLine.position.y;
+        InitializeLineVectors();
+        //BPM = 120;
+        //ArkNodeTest().Forget();
+        LoadNodeData("test1");
+        PrepareAllNodes();
         combo = 0;
         judgeUI.text = "";
         detailJudgeUI.text = "";
@@ -91,15 +85,22 @@ public class GameManager : MonoBehaviour
         }
     }
 
-
     // Update is called once per frame
     void Update()
     {
         comboUI.text = combo.ToString();
     }
-    void SetDist()
+
+    void InitializeLineVectors()
     {
-        dist = spawnLine.position.y - judgeLine.position.y;
+        groundLineVecs.Add(new Vector3(-4.8357f, 0, 0));
+        groundLineVecs.Add(new Vector3(-1.6212f, 0, 0));
+        groundLineVecs.Add(new Vector3(1.6212f, 0, 0));
+        groundLineVecs.Add(new Vector3(4.8357f, 0, 0));
+        skyLineVecs.Add(new Vector3(-2.85f, 0, -3));
+        skyLineVecs.Add(new Vector3(-0.9f, 0, -3));
+        skyLineVecs.Add(new Vector3(0.9f, 0, -3));
+        skyLineVecs.Add(new Vector3(2.85f, 0, -3));
     }
     public void LoadNodeData(string songName)
     {
@@ -116,7 +117,7 @@ public class GameManager : MonoBehaviour
             {
                 var s = nodeDatas[i];
                 string[] nodeData = s.Split('\t');
-                NodeInfo nodeInfo = new NodeInfo(int.Parse(nodeData[0]), float.Parse(nodeData[1]), float.Parse(nodeData[2]));
+                NodeInfo nodeInfo = new NodeInfo(bool.Parse(nodeData[0]), int.Parse(nodeData[1]) ,float.Parse(nodeData[2]), float.Parse(nodeData[3]));
                 currentSongDatas.Add(nodeInfo);
             }
         }
@@ -126,7 +127,6 @@ public class GameManager : MonoBehaviour
             Debug.Log("File lost");
         }      
     }
-
     public void PrepareAllNodes()
     {
         int length = currentSongDatas.Count;
@@ -134,13 +134,29 @@ public class GameManager : MonoBehaviour
         {
             NodeInfo nodeData = currentSongDatas[i];
             GameObject nodeObj;
-            if (nodeData.longBitNum == -1)
-                nodeObj = Instantiate(nodePrefab, laneStructure.transform);
+
+            if(nodeData.isSkyNode)
+            {
+                if (nodeData.longBitNum == -1)
+                    nodeObj = Instantiate(skyNodePrefab, laneStructure.transform);
+                else
+                {
+                    nodeObj = Instantiate(arkNodePrefab, laneStructure.transform);
+                    LongNode longNodeScript = nodeObj.GetComponentInChildren<LongNode>();
+                    longNodeScript.SetBitNum(nodeData.longBitNum);
+                }
+            }
+
             else
             {
-                nodeObj = Instantiate(longNodePrefab, laneStructure.transform);
-                LongNode longNodeScript = nodeObj.GetComponentInChildren<LongNode>();
-                longNodeScript.SetBitNum(nodeData.longBitNum);
+                if (nodeData.longBitNum == -1)
+                    nodeObj = Instantiate(nodePrefab, laneStructure.transform);
+                else
+                {
+                    nodeObj = Instantiate(longNodePrefab, laneStructure.transform);
+                    LongNode longNodeScript = nodeObj.GetComponentInChildren<LongNode>();
+                    longNodeScript.SetBitNum(nodeData.longBitNum);
+                }
             }
 
             Node nodeScript = nodeObj.GetComponent<Node>();
@@ -160,25 +176,10 @@ public class GameManager : MonoBehaviour
     }
     void SetNodePos(Node node)
     {
-        switch (node.line)
-        {
-            case 1:
-                if(node.isSkyNode) node.transform.position = spawnLine.position + new Vector3(SKY_LINE1_POS_X, 0, SKY_LINE_POS_Y);//sky lane1
-                else node.transform.position = spawnLine.position + new Vector3(LINE1_POS_X, 0, 0);//lane1
-                break;
-            case 2:
-                if (node.isSkyNode) node.transform.position = spawnLine.position + new Vector3(SKY_LINE2_POS_X, 0, SKY_LINE_POS_Y);//sky lane2
-                else node.transform.position = spawnLine.position + new Vector3(LINE2_POS_X, 0, 0);//lane2
-                break;
-            case 3:
-                if (node.isSkyNode) node.transform.position = spawnLine.position + new Vector3(SKY_LINE3_POS_X, 0, SKY_LINE_POS_Y);//sky lane3
-                else node.transform.position = spawnLine.position + new Vector3(LINE3_POS_X, 0, 0);//lane3
-                break;
-            case 4:
-                if (node.isSkyNode) node.transform.position = spawnLine.position + new Vector3(SKY_LINE4_POS_X, 0, SKY_LINE_POS_Y);//sky lane4
-                else node.transform.position = spawnLine.position + new Vector3(LINE4_POS_X, 0, 0);//lane4
-                break;
-        }
+        if (node.isSkyNode)
+            node.transform.position = spawnLine.position + skyLineVecs[node.line - 1];
+        else
+            node.transform.position = spawnLine.position + groundLineVecs[node.line - 1];      
     }
     public async UniTaskVoid SetJudegeUI(int n)
     {
@@ -247,33 +248,33 @@ public class GameManager : MonoBehaviour
     {
         if (isSkyNode)
         {
-            arkNodeHitVFXs[lineNum - 1].SetActive(true);
+            arkNodeHitVFX[lineNum - 1].SetActive(true);
             laneStructure.transform.DORotate(new Vector3(0, GetTiltState(), 0), 0.4f);//아크노트 플레인 기울임 연출 코드임
         }
            
 
         else
-            longNodeHitVFXs[lineNum - 1].SetActive(true);
+            longNodeHitVFX[lineNum - 1].SetActive(true);
     }
     public void VFXOff(int lineNum, bool isSkyNode)
     {
         if (isSkyNode)
         {
-            arkNodeHitVFXs[lineNum - 1].SetActive(false);
+            arkNodeHitVFX[lineNum - 1].SetActive(false);
             laneStructure.transform.DORotate(new Vector3(0, GetTiltState(), 0), 0.4f);//아크노트 플레인 기울임 연출 코드임
         }
            
 
         else
-            longNodeHitVFXs[lineNum - 1].SetActive(false);
+            longNodeHitVFX[lineNum - 1].SetActive(false);
     }
     int GetTiltState()
     {
         int result = 0;
-        if (arkNodeHitVFXs[0].activeSelf) result += 2;
-        if (arkNodeHitVFXs[1].activeSelf) result += 1;
-        if (arkNodeHitVFXs[2].activeSelf) result -= 1;
-        if (arkNodeHitVFXs[3].activeSelf) result -= 2;
+        if (arkNodeHitVFX[0].activeSelf) result += 2;
+        if (arkNodeHitVFX[1].activeSelf) result += 1;
+        if (arkNodeHitVFX[2].activeSelf) result -= 1;
+        if (arkNodeHitVFX[3].activeSelf) result -= 2;
 
         return result;
     }

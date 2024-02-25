@@ -1339,6 +1339,26 @@ PrefabInstance:
     serializedVersion: 2
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2674252793189980835, guid: eb9c5bdbfcb83664aa50d407e2869fb7, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 2674252793189980844, guid: eb9c5bdbfcb83664aa50d407e2869fb7, type: 3}
+      propertyPath: m_Color.b
+      value: 0.1294117
+      objectReference: {fileID: 0}
+    - target: {fileID: 2674252793189980844, guid: eb9c5bdbfcb83664aa50d407e2869fb7, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2674252793189980844, guid: eb9c5bdbfcb83664aa50d407e2869fb7, type: 3}
+      propertyPath: m_Color.r
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2674252793189980845, guid: eb9c5bdbfcb83664aa50d407e2869fb7, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2674252793594148168, guid: eb9c5bdbfcb83664aa50d407e2869fb7, type: 3}
       propertyPath: m_Camera
       value: 
@@ -1555,6 +1575,30 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1228762341}
     - target: {fileID: 7544337675754571507, guid: 372e2bb8ad65b474bb6a5a46c43db2eb, type: 3}
+      propertyPath: arkNodeHitVFX.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7544337675754571507, guid: 372e2bb8ad65b474bb6a5a46c43db2eb, type: 3}
+      propertyPath: longNodeHitVFX.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7544337675754571507, guid: 372e2bb8ad65b474bb6a5a46c43db2eb, type: 3}
+      propertyPath: arkNodeHitVFX.Array.data[0]
+      value: 
+      objectReference: {fileID: 820353575}
+    - target: {fileID: 7544337675754571507, guid: 372e2bb8ad65b474bb6a5a46c43db2eb, type: 3}
+      propertyPath: arkNodeHitVFX.Array.data[1]
+      value: 
+      objectReference: {fileID: 906645549}
+    - target: {fileID: 7544337675754571507, guid: 372e2bb8ad65b474bb6a5a46c43db2eb, type: 3}
+      propertyPath: arkNodeHitVFX.Array.data[2]
+      value: 
+      objectReference: {fileID: 1068837678}
+    - target: {fileID: 7544337675754571507, guid: 372e2bb8ad65b474bb6a5a46c43db2eb, type: 3}
+      propertyPath: arkNodeHitVFX.Array.data[3]
+      value: 
+      objectReference: {fileID: 815563364}
+    - target: {fileID: 7544337675754571507, guid: 372e2bb8ad65b474bb6a5a46c43db2eb, type: 3}
       propertyPath: arkNodeHitVFXs.Array.data[0]
       value: 
       objectReference: {fileID: 820353575}
@@ -1570,6 +1614,22 @@ PrefabInstance:
       propertyPath: arkNodeHitVFXs.Array.data[3]
       value: 
       objectReference: {fileID: 815563364}
+    - target: {fileID: 7544337675754571507, guid: 372e2bb8ad65b474bb6a5a46c43db2eb, type: 3}
+      propertyPath: longNodeHitVFX.Array.data[0]
+      value: 
+      objectReference: {fileID: 281204078}
+    - target: {fileID: 7544337675754571507, guid: 372e2bb8ad65b474bb6a5a46c43db2eb, type: 3}
+      propertyPath: longNodeHitVFX.Array.data[1]
+      value: 
+      objectReference: {fileID: 807875135}
+    - target: {fileID: 7544337675754571507, guid: 372e2bb8ad65b474bb6a5a46c43db2eb, type: 3}
+      propertyPath: longNodeHitVFX.Array.data[2]
+      value: 
+      objectReference: {fileID: 1869355328}
+    - target: {fileID: 7544337675754571507, guid: 372e2bb8ad65b474bb6a5a46c43db2eb, type: 3}
+      propertyPath: longNodeHitVFX.Array.data[3]
+      value: 
+      objectReference: {fileID: 468153129}
     - target: {fileID: 7544337675754571507, guid: 372e2bb8ad65b474bb6a5a46c43db2eb, type: 3}
       propertyPath: longNodeHitVFXs.Array.data[0]
       value: 

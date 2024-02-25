@@ -22,7 +22,7 @@ public class EditorNode : MonoBehaviour
         isLongNode = false;
         isLocked = false;
         longBitNum = -1;
-        checkRange = 0.7f;
+        checkRange = 0.5f;
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
@@ -115,7 +115,8 @@ public class EditorNode : MonoBehaviour
                     float startPosY = transform.position.y;
                     float endPosY = endNode.transform.position.y;
                     EditorNode[] lineFriends = transform.parent.GetComponentsInChildren<EditorNode>();
-                    for (int i = 0; i < lineFriends.Length; i++)
+                    int length = lineFriends.Length;
+                    for (int i = 0; i < length; i++)
                     {
                         float targetPosY = lineFriends[i].transform.position.y;
                         if (startPosY < targetPosY && targetPosY <= endPosY)
@@ -140,7 +141,8 @@ public class EditorNode : MonoBehaviour
                 longNodeStartPoint.longBitNum = (endPosY - startPosY) / 4;
                 EditorManager.instance.AddLongNodeSet(longNodeStartPoint.gameObject, gameObject);
                 EditorNode[] lineFriends = transform.parent.GetComponentsInChildren<EditorNode>();
-                for (int i = 0; i < lineFriends.Length; i++)
+                int length = lineFriends.Length;
+                for (int i = 0; i < length; i++)
                 {
                     float targetPosY = lineFriends[i].transform.position.y;
                     if (startPosY < targetPosY && targetPosY <= endPosY)

@@ -30,16 +30,6 @@ public class Node : MonoBehaviour
     const float GOOD_TIME = 108.3f * 0.001f;
     const float BAD_TIME = 125.0f * 0.001f;
 
-    const float LINE1_POS_X = -4.8357f;
-    const float LINE2_POS_X = -1.6212f;
-    const float LINE3_POS_X = 1.6212f;
-    const float LINE4_POS_X = 4.8357f;
-    const float SKY_LINE1_POS_X = -2.85f;
-    const float SKY_LINE2_POS_X = -0.9f;
-    const float SKY_LINE3_POS_X = 0.9f;
-    const float SKY_LINE4_POS_X = 2.85f;
-    const float SKY_LINE_POS_Y = -3.0f;
-
     void Start()
     {
         //line = 1;
@@ -70,7 +60,7 @@ public class Node : MonoBehaviour
         {
             if (Input.GetKeyDown(GetNodeLaneInput()) && expectedArriveTime - timer < BAD_TIME)
             {
-                nodeJudgement(timer);
+                NodeJudgement(timer);
 
                 if (!headMode)
                 {
@@ -126,8 +116,7 @@ public class Node : MonoBehaviour
         }
         return laneInput;
     }
-
-    void nodeJudgement(float inputTime)
+    void NodeJudgement(float inputTime)
     {
         float actualDiff = inputTime - expectedArriveTime;
         float diff = Mathf.Abs(actualDiff);
@@ -160,37 +149,20 @@ public class Node : MonoBehaviour
             GameManager.instance.SetDetailJudgeUI(actualDiff).Forget();
             GameManager.instance.combo = 0;
         }
-    }
-    
+    }    
     public void SetNodeLine(int line)
     {
         this.line = line;
     }
-
     async UniTaskVoid ActivateVFX()
     {
         Vector3 judgeLinePos = new Vector3(0, -4, 0);
         GameObject hitObj = ObjectPool.instance.pool.Get();
 
-        switch (line)
-        {
-            case 1:
-                if (isSkyNode) hitObj.transform.position = judgeLinePos + new Vector3(SKY_LINE1_POS_X, 0, SKY_LINE_POS_Y);//sky lane1
-                else hitObj.transform.position = judgeLinePos + new Vector3(LINE1_POS_X, 0, 0);//lane1
-                break;
-            case 2:
-                if (isSkyNode) hitObj.transform.position = judgeLinePos + new Vector3(SKY_LINE2_POS_X, 0, SKY_LINE_POS_Y);//sky lane2
-                else hitObj.transform.position = judgeLinePos + new Vector3(LINE2_POS_X, 0, 0);//lane2
-                break;
-            case 3:
-                if (isSkyNode) hitObj.transform.position = judgeLinePos + new Vector3(SKY_LINE3_POS_X, 0, SKY_LINE_POS_Y);//sky lane3
-                else hitObj.transform.position = judgeLinePos + new Vector3(LINE3_POS_X, 0, 0);//lane3
-                break;
-            case 4:
-                if (isSkyNode) hitObj.transform.position = judgeLinePos + new Vector3(SKY_LINE4_POS_X, 0, SKY_LINE_POS_Y);//sky lane4
-                else hitObj.transform.position = judgeLinePos + new Vector3(LINE4_POS_X, 0, 0);//lane4
-                break;
-        }
+        if (isSkyNode)
+            hitObj.transform.position = judgeLinePos + GameManager.instance.skyLineVecs[line - 1];
+        else
+            hitObj.transform.position = judgeLinePos + GameManager.instance.groundLineVecs[line - 1];
 
         await UniTask.Delay(TimeSpan.FromSeconds(0.5f));
         ObjectPool.instance.pool.Release(hitObj);
