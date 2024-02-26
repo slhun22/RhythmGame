@@ -92,7 +92,7 @@ public class Node : MonoBehaviour
             }
         }      
     }
-    KeyCode GetNodeLaneInput()
+    public KeyCode GetNodeLaneInput()
     {
         KeyCode laneInput = KeyCode.Space;
         switch (line)

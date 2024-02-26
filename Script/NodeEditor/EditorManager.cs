@@ -287,7 +287,7 @@ public class EditorManager : MonoBehaviour
             else//long node case
             {
                 var startNode = (lineNodesLists[lineNum - 1 + skyOffset])[index].gameObject;
-                (lineNodesLists[lineNum - 1])[index].SetNodeLongNodeHead();
+                (lineNodesLists[lineNum - 1 + skyOffset])[index].SetNodeLongNodeHead();
 
                 for (int j = 0; j < nodeLength; j++)
                     (lineNodesLists[lineNum - 1 + skyOffset])[++index].SetNodeLongNodeTail();

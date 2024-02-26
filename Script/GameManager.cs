@@ -66,7 +66,7 @@ public class GameManager : MonoBehaviour
         InitializeLineVectors();
         //BPM = 120;
         //ArkNodeTest().Forget();
-        LoadNodeData("test1");
+        LoadNodeData("test2");
         PrepareAllNodes();
         combo = 0;
         judgeUI.text = "";

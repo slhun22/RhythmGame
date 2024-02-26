@@ -1551,6 +1551,10 @@ PrefabInstance:
       value: GameManager
       objectReference: {fileID: 0}
     - target: {fileID: 7544337675754571507, guid: 372e2bb8ad65b474bb6a5a46c43db2eb, type: 3}
+      propertyPath: speed
+      value: 70
+      objectReference: {fileID: 0}
+    - target: {fileID: 7544337675754571507, guid: 372e2bb8ad65b474bb6a5a46c43db2eb, type: 3}
       propertyPath: comboUI
       value: 
       objectReference: {fileID: 1460180557}
