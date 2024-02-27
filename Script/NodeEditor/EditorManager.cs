@@ -27,6 +27,11 @@ public class EditorManager : MonoBehaviour
     [SerializeField] AudioSource audiosrc;
     [SerializeField] AudioClip music;
     [SerializeField] TextMeshProUGUI pitchText;
+    [SerializeField] GameObject popUpCanvas;
+    [SerializeField] TextMeshProUGUI popUpMainText;
+    [SerializeField] Image popUpPanel;
+    [SerializeField] Color32 successColor;
+    [SerializeField] Color32 failColor;
     float BPM;
     bool isProgressBarActive;
     string songName;
@@ -90,7 +95,14 @@ public class EditorManager : MonoBehaviour
     public void SetSongName() { songName = songNameInput.text; }
     public int GetMusicCheckPosition() { return musicCheckNum - 4; }//return real position of check point
     public void SetMusicCheckPoint(int y) { musicCheckNum = y; }//send position number of the check point to manager
-    public void AddLongNodeSet(GameObject startNode, GameObject endNode) { longNodeDic.Add(startNode, endNode); }
+    public void AddLongNodeSet(GameObject startNode, GameObject endNode)
+    {
+        if (longNodeDic.ContainsKey(startNode))
+            PopUpManage(false, 2).Forget();
+
+        longNodeDic.Add(startNode, endNode);
+    }
+
     public void DeleteLongNodeSet(GameObject startNode) { longNodeDic.Remove(startNode); }
     public GameObject GetLongNodeEnd(GameObject startNode) { return longNodeDic[startNode]; }
     public void MusicPlay()
@@ -182,6 +194,13 @@ public class EditorManager : MonoBehaviour
         SetSongName();
         string path = string.Format("{0}/{1}.txt", Application.persistentDataPath, songName);
         if (File.Exists(path)) File.Delete(path);
+
+        if(BPM == 0)
+        {
+            PopUpManage(false, 0).Forget();
+            return;
+        }
+
         string basicSongData = $"{songName}\t{BPM}\n";
         File.AppendAllText(path, basicSongData);
         int length = nodeInfos.Count;
@@ -194,6 +213,7 @@ public class EditorManager : MonoBehaviour
             string data = $"{isSkyNode}\t{lineNum}\t{bits}\t{longBitNum}\n";
             File.AppendAllText(path, data);
         }
+        PopUpManage(true, 0).Forget();
     }
 
     NodeInfo ExtractNodeInfo(EditorNode editorNode)
@@ -217,7 +237,7 @@ public class EditorManager : MonoBehaviour
 
         return nodeInfo;
     }
-    void LoadStructure()
+    bool LoadStructure()
     {
         nodeInfos.Clear();
         string path = string.Format("{0}/{1}.txt", Application.persistentDataPath, songName);
@@ -246,11 +266,13 @@ public class EditorManager : MonoBehaviour
             //(toplinenum 1) == (-4 of position y)
             int beforeTopLineNum = (int)(maxbit * 4) + 1;
             cameraMoveScript.maxCenterY = (beforeTopLineNum - 10) + 20;//automatically generate line by function "GenerateNewLine()", +20 is for longNode offset
+            return true;
         }
        
         else
         {
             Debug.Log("No matching file");
+            return false;
         }
     }
 
@@ -297,15 +319,55 @@ public class EditorManager : MonoBehaviour
             }            
         }
     }
-
     async UniTaskVoid LoadUniTask()
     {
-        LoadStructure();
-        await UniTask.WaitUntil(() => (int)cameraMoveScript.maxCenterY + 10 <= toplineNum);
-        LoadComplete();
+        bool loadStructureFinished = LoadStructure();
+        if(loadStructureFinished)
+        {
+            await UniTask.WaitUntil(() => (int)cameraMoveScript.maxCenterY + 10 <= toplineNum);
+            LoadComplete();
+            PopUpManage(true, 1).Forget();
+        }
+        else
+        {
+            PopUpManage(false, 1).Forget();
+        }    
     }
     public void Load()
     {
         LoadUniTask().Forget();
+    }
+
+
+    /// <param name="mode">[0 : save] [1 : load] [2 : longnodeError]</param>
+    async UniTaskVoid PopUpManage(bool isSuccess, int mode)
+    {
+        if (isSuccess)
+        {
+            if(mode == 0)
+                popUpMainText.text = "Save Success";
+            else
+                popUpMainText.text = "Load Success";
+
+            popUpMainText.color = Color.blue;
+            popUpPanel.color = successColor;
+        }
+        else
+        {
+            if (mode == 0)
+                popUpMainText.text = "Save Failed (BPM Unknown)";
+            else if(mode == 1)
+                popUpMainText.text = "Load Failed (Location Unknown)";
+            else if(mode == 2)
+                popUpMainText.text = "LongNode Error. Please Restart";
+
+            popUpMainText.color = Color.red;
+            popUpPanel.color = failColor;
+        }
+
+        popUpCanvas.SetActive(true);
+
+        await UniTask.WaitUntil(() => Input.anyKeyDown);//enter 치면 error나니 주의
+        popUpCanvas.SetActive(false);
     }
 }

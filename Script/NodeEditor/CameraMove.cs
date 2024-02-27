@@ -10,6 +10,7 @@ public class CameraMove : MonoBehaviour
     Vector2 beforePoint = Vector2.zero;
     Vector3 chaseBeforePos;
     bool isCameraChaseActive;
+    Vector3 firstPos;
 
 
     private void Start()
@@ -17,6 +18,7 @@ public class CameraMove : MonoBehaviour
         maxCenterY = 0;
         chaseBeforePos = new Vector3(-1, 0, -10);
         isCameraChaseActive = false;
+        firstPos = transform.position;
     }
 
     private void Update()
@@ -76,4 +78,5 @@ public class CameraMove : MonoBehaviour
             isCameraChaseActive = false;
         }
     }
+    public void TeleportStartPoint() { transform.position = firstPos; } //used in "R" Button
 }
