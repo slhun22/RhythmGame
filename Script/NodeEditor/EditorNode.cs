@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class EditorNode : MonoBehaviour
@@ -85,10 +82,11 @@ public class EditorNode : MonoBehaviour
         isSelected = true;
     }
 
-    public void SetNodeLongNodeHead() //for Load function in EditorManager
+    public void SetNodeLongNodeHead(float longBitNum) //for Load function in EditorManager
     {
         spriteRenderer.color = Color.green;
         isLongNode = true;
+        this.longBitNum = longBitNum;
     }
 
     public void SetNodeLongNodeTail() //for Load function in EditorManager

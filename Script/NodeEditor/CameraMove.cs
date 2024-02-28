@@ -1,11 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor.Rendering;
 using UnityEngine;
 
 public class CameraMove : MonoBehaviour
 {
-    public float maxCenterY { get; set; }
+    public float MaxCenterY { get; set; }
     [SerializeField] float speed;
     Vector2 beforePoint = Vector2.zero;
     Vector3 chaseBeforePos;
@@ -15,7 +12,7 @@ public class CameraMove : MonoBehaviour
 
     private void Start()
     {
-        maxCenterY = 0;
+        MaxCenterY = 0;
         chaseBeforePos = new Vector3(-1, 0, -10);
         isCameraChaseActive = false;
         firstPos = transform.position;
@@ -42,8 +39,8 @@ public class CameraMove : MonoBehaviour
             {
                 transform.position += new Vector3(0, diff.y, 0) * speed * Time.deltaTime;
 
-                if (transform.position.y > maxCenterY)
-                    maxCenterY = transform.position.y;
+                if (transform.position.y > MaxCenterY)
+                    MaxCenterY = transform.position.y;
             }
         }
 
@@ -54,29 +51,26 @@ public class CameraMove : MonoBehaviour
     void CameraChase()
     {
         int cameraStartPosY;
-        if(EditorManager.instance.isPlaying)
+        if(EditorManager.instance.IsPlaying)
         {
             if(!isCameraChaseActive)
             {
                 chaseBeforePos = transform.position;
-
-                if (EditorManager.instance.GetMusicCheckPosition() < 0) 
-                    cameraStartPosY = 0;
-                else 
-                    cameraStartPosY = EditorManager.instance.GetMusicCheckPosition();
-
+                cameraStartPosY = EditorManager.instance.GetMusicCheckPosition();
                 transform.position = new Vector3(-1, cameraStartPosY, -10);
                 isCameraChaseActive = true;
             }
 
-            transform.Translate(EditorManager.instance.GetTranslatePower());
+            if(!EditorManager.instance.IsPause)
+                transform.Translate(EditorManager.instance.GetTranslatePower());
         }
 
-        else if(!EditorManager.instance.isPlaying && isCameraChaseActive)
+        else if(!EditorManager.instance.IsPlaying && isCameraChaseActive)
         {
             transform.position = chaseBeforePos;
             isCameraChaseActive = false;
         }
     }
-    public void TeleportStartPoint() { transform.position = firstPos; } //used in "R" Button
+    public void TeleportStartPoint() { transform.position = firstPos; } //used in "S" Button
+    public void TeleportEndPoint() { transform.position = new Vector3(-1, MaxCenterY, -10); } //used in "E" Button
 }

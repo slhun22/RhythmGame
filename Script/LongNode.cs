@@ -79,7 +79,7 @@ public class LongNode : MonoBehaviour
     async UniTaskVoid LongJudgement()
     {
         float timePerBit = 60 / GameManager.instance.BPM;
-        await UniTask.WaitUntil(() => headNode.isEnd);//head hit 전까지 대기
+        await UniTask.WaitUntil(() => headNode.IsEnd);//head hit 전까지 대기
         Timer().Forget();
         while(!timeOver)
         {        
@@ -96,9 +96,9 @@ public class LongNode : MonoBehaviour
                 else
                     spriteRenderer.color = originalColor;
 
-                GameManager.instance.VFXOn(headNode.line, headNode.isSkyNode);
+                GameManager.instance.VFXOn(headNode.Line, headNode.isSkyNode);
                 GameManager.instance.SetJudegeUI(0).Forget();
-                GameManager.instance.combo++;
+                GameManager.instance.Combo++;
             }
 
             else if (!Input.GetKey(headNode.GetNodeLaneInput()))
@@ -112,28 +112,28 @@ public class LongNode : MonoBehaviour
      
                 if (safeTimeOver) //miss
                 {
-                    GameManager.instance.VFXOff(headNode.line, headNode.isSkyNode);
+                    GameManager.instance.VFXOff(headNode.Line, headNode.isSkyNode);
                     Debug.Log("MissLong");
                     GameManager.instance.SetJudegeUI(4).Forget();
-                    GameManager.instance.combo = 0;
+                    GameManager.instance.Combo = 0;
                 }
 
                 else // miss safe time
                 {
                     Debug.Log("perfect");
                     GameManager.instance.SetJudegeUI(0).Forget();
-                    GameManager.instance.combo++;
+                    GameManager.instance.Combo++;
                 }
             }
             GameManager.instance.ClearDetailJudge();
         }
-        GameManager.instance.VFXOff(headNode.line, headNode.isSkyNode);
+        GameManager.instance.VFXOff(headNode.Line, headNode.isSkyNode);
         headNode.gameObject.SetActive(false);
     }
 
     void LongNodeResizeByHit()//직접 보이기 때문에 자연스러움을 위해 판정과 별개로 update문에 넣어야 할듯
     {
-        if(Input.GetKey(headNode.GetNodeLaneInput()) && headNode.isEnd)
+        if(Input.GetKey(headNode.GetNodeLaneInput()) && headNode.IsEnd)
         {
             const float judgeLineY = -4.0f;
             float halfLength = transform.lossyScale.y / 2;
@@ -147,7 +147,7 @@ public class LongNode : MonoBehaviour
     }
     void ArkNodeResizeByHit()
     {
-        if(Input.GetKey(headNode.GetNodeLaneInput()) && headNode.isEnd)
+        if(Input.GetKey(headNode.GetNodeLaneInput()) && headNode.IsEnd)
         {
             const float judgeLineY = -4.0f;
             float halfLength = transform.lossyScale.y / 2;

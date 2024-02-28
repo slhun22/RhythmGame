@@ -1,12 +1,7 @@
 using Cysharp.Threading.Tasks;
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Globalization;
 using System.IO;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,7 +9,8 @@ public class EditorManager : MonoBehaviour
 {
     public static EditorManager instance = null;//singleton pattern instance
 
-    public bool isPlaying;
+    public bool IsPlaying { get; private set; }
+    public bool IsPause { get; private set; }
     [SerializeField] CameraMove cameraMoveScript;
     [SerializeField] GameObject lineNodeObj;
     [SerializeField] GameObject musicCheckPointObj;
@@ -24,6 +20,7 @@ public class EditorManager : MonoBehaviour
     [SerializeField] int musicCheckNum;//0 start
     [SerializeField] TMP_InputField songNameInput;
     [SerializeField] TMP_InputField bpmInput;
+    //[SerializeField] TMP_InputField offsetInput;
     [SerializeField] AudioSource audiosrc;
     [SerializeField] AudioClip music;
     [SerializeField] TextMeshProUGUI pitchText;
@@ -33,10 +30,12 @@ public class EditorManager : MonoBehaviour
     [SerializeField] Color32 successColor;
     [SerializeField] Color32 failColor;
     float BPM;
+    //float musicOffset;  
     bool isProgressBarActive;
     string songName;
     List<NodeInfo> nodeInfos = new List<NodeInfo>();
     Dictionary<GameObject, GameObject> longNodeDic = new Dictionary<GameObject, GameObject>(1000);//Caching container for longNode set
+    enum Mode { Save, Load, Error }
 
     private void Awake()
     {
@@ -60,7 +59,8 @@ public class EditorManager : MonoBehaviour
         toplineNum = 10;
         musicCheckNum = 0;
         audiosrc.clip = music;
-        isPlaying = false;
+        IsPlaying = false;
+        IsPause = false;
         isProgressBarActive = false;
     }
 
@@ -68,13 +68,14 @@ public class EditorManager : MonoBehaviour
     void Update()
     {
         GenerateNewLine();
+        MusicPlay();
         MusicProgressBar();
         SimulateSpeedManage();
     }
     
     void GenerateNewLine()//Create new Lines
     {
-        int expectedTopLineNum = (int)cameraMoveScript.maxCenterY + 10;
+        int expectedTopLineNum = (int)cameraMoveScript.MaxCenterY + 10;
         while (expectedTopLineNum > toplineNum)
         {
             Instantiate(lineNodeObj, new Vector3(-8, toplineNum - 4, 0), Quaternion.identity, lineParents[0]);
@@ -91,14 +92,13 @@ public class EditorManager : MonoBehaviour
             toplineNum++;
         }
     }
-    public void SetBPM() { BPM = float.Parse(bpmInput.text); }
-    public void SetSongName() { songName = songNameInput.text; }
+    //public void SetOffset() { musicOffset = float.Parse(offsetInput.text); }
     public int GetMusicCheckPosition() { return musicCheckNum - 4; }//return real position of check point
     public void SetMusicCheckPoint(int y) { musicCheckNum = y; }//send position number of the check point to manager
     public void AddLongNodeSet(GameObject startNode, GameObject endNode)
     {
         if (longNodeDic.ContainsKey(startNode))
-            PopUpManage(false, 2).Forget();
+            PopUpManage(false, Mode.Error).Forget();
 
         longNodeDic.Add(startNode, endNode);
     }
@@ -107,26 +107,43 @@ public class EditorManager : MonoBehaviour
     public GameObject GetLongNodeEnd(GameObject startNode) { return longNodeDic[startNode]; }
     public void MusicPlay()
     {
-        if (!isPlaying)
+        if(Input.GetKeyDown(KeyCode.KeypadEnter))
         {
-            float timePerBit = 60 / BPM;
-            float playStartTime = timePerBit * musicCheckNum / 4;
-            audiosrc.time = playStartTime;
-            audiosrc.Play();
-            isPlaying = true;
-        }
-
-        else
+            if (!IsPlaying)
+            {
+                float timePerBit = 60 / BPM;
+                float playStartTime = 0.15f + timePerBit * musicCheckNum / 4;
+                audiosrc.time = playStartTime;
+                audiosrc.Play();
+                IsPlaying = true;
+            }
+            else
+            {
+                audiosrc.Stop();
+                IsPlaying = false;
+                IsPause = false;
+            }
+        }  
+        
+        else if(IsPlaying && Input.GetKeyDown(KeyCode.P))
         {
-            audiosrc.Stop();
-            isPlaying = false;
+            if(!IsPause)
+            {
+                audiosrc.Pause();
+                IsPause = true;
+            }
+            else
+            {
+                audiosrc.UnPause();
+                IsPause = false;
+            }
         }
     }
 
     public Vector2 GetTranslatePower() { return Vector2.up * BPM / 60 * 4 * Time.deltaTime * audiosrc.pitch; }
     void MusicProgressBar()
     {
-        if(isPlaying)
+        if(IsPlaying)
         {
             if(!isProgressBarActive)
             {
@@ -134,10 +151,11 @@ public class EditorManager : MonoBehaviour
                 isProgressBarActive = true;
             }
            
-            progressBarObj.transform.Translate(GetTranslatePower());
+            if(!IsPause)
+                progressBarObj.transform.Translate(GetTranslatePower());
         }
 
-        else if(!isPlaying && isProgressBarActive)
+        else if(!IsPlaying && isProgressBarActive)
         {
             progressBarObj.transform.position = new Vector3(-1, -9, 0);
             isProgressBarActive = false;
@@ -191,13 +209,15 @@ public class EditorManager : MonoBehaviour
                 if ((lineNodesLists[j])[i].isSelected || (lineNodesLists[j])[i].isLongNode)
                     nodeInfos.Add(ExtractNodeInfo((lineNodesLists[j])[i]));
 
-        SetSongName();
+        songName = songNameInput.text;
         string path = string.Format("{0}/{1}.txt", Application.persistentDataPath, songName);
         if (File.Exists(path)) File.Delete(path);
 
-        if(BPM == 0)
+        if(float.TryParse(bpmInput.text, out BPM))
+            BPM = float.Parse(bpmInput.text);
+        else
         {
-            PopUpManage(false, 0).Forget();
+            PopUpManage(false, Mode.Save).Forget();
             return;
         }
 
@@ -206,14 +226,14 @@ public class EditorManager : MonoBehaviour
         int length = nodeInfos.Count;
         for (int i = 0; i < length; i++)
         {
-            bool isSkyNode = nodeInfos[i].isSkyNode;
-            int lineNum = nodeInfos[i].lineNum;
-            float bits = nodeInfos[i].bit;
-            float longBitNum = nodeInfos[i].longBitNum;
+            bool isSkyNode = nodeInfos[i].IsSkyNode;
+            int lineNum = nodeInfos[i].LineNum;
+            float bits = nodeInfos[i].Bit;
+            float longBitNum = nodeInfos[i].LongBitNum;
             string data = $"{isSkyNode}\t{lineNum}\t{bits}\t{longBitNum}\n";
             File.AppendAllText(path, data);
         }
-        PopUpManage(true, 0).Forget();
+        PopUpManage(true, Mode.Save).Forget();
     }
 
     NodeInfo ExtractNodeInfo(EditorNode editorNode)
@@ -240,6 +260,7 @@ public class EditorManager : MonoBehaviour
     bool LoadStructure()
     {
         nodeInfos.Clear();
+        songName = songNameInput.text;
         string path = string.Format("{0}/{1}.txt", Application.persistentDataPath, songName);
         if(File.Exists(path))
         {
@@ -251,7 +272,7 @@ public class EditorManager : MonoBehaviour
             string[] basicData = datas[0].Split('\t');
             songName = basicData[0];
             BPM = float.Parse(basicData[1]);
-            Debug.Log($"Song name : {songName}, BPM : {BPM}");
+            bpmInput.text = BPM.ToString();
             int length = datas.Length;
             for(int i = 1; i < length; i++)
             {
@@ -265,7 +286,7 @@ public class EditorManager : MonoBehaviour
             }
             //(toplinenum 1) == (-4 of position y)
             int beforeTopLineNum = (int)(maxbit * 4) + 1;
-            cameraMoveScript.maxCenterY = (beforeTopLineNum - 10) + 20;//automatically generate line by function "GenerateNewLine()", +20 is for longNode offset
+            cameraMoveScript.MaxCenterY = (beforeTopLineNum - 10) + 20;//automatically generate line by function "GenerateNewLine()", +20 is for longNode offset
             return true;
         }
        
@@ -293,10 +314,10 @@ public class EditorManager : MonoBehaviour
         int length = nodeInfos.Count;
         for (int i = 0; i < length; i++)
         {
-            bool isSkyNode = nodeInfos[i].isSkyNode;
-            int lineNum = nodeInfos[i].lineNum;
-            float bit = nodeInfos[i].bit;
-            float longBitNum = nodeInfos[i].longBitNum;
+            bool isSkyNode = nodeInfos[i].IsSkyNode;
+            int lineNum = nodeInfos[i].LineNum;
+            float bit = nodeInfos[i].Bit;
+            float longBitNum = nodeInfos[i].LongBitNum;
             int index = (int)(bit * 4);
             int nodeLength = (int)(longBitNum * 4);
             int skyOffset = 0;
@@ -309,7 +330,7 @@ public class EditorManager : MonoBehaviour
             else//long node case
             {
                 var startNode = (lineNodesLists[lineNum - 1 + skyOffset])[index].gameObject;
-                (lineNodesLists[lineNum - 1 + skyOffset])[index].SetNodeLongNodeHead();
+                (lineNodesLists[lineNum - 1 + skyOffset])[index].SetNodeLongNodeHead(longBitNum);
 
                 for (int j = 0; j < nodeLength; j++)
                     (lineNodesLists[lineNum - 1 + skyOffset])[++index].SetNodeLongNodeTail();
@@ -324,13 +345,13 @@ public class EditorManager : MonoBehaviour
         bool loadStructureFinished = LoadStructure();
         if(loadStructureFinished)
         {
-            await UniTask.WaitUntil(() => (int)cameraMoveScript.maxCenterY + 10 <= toplineNum);
+            await UniTask.WaitUntil(() => (int)cameraMoveScript.MaxCenterY + 10 <= toplineNum);
             LoadComplete();
-            PopUpManage(true, 1).Forget();
+            PopUpManage(true, Mode.Load).Forget();
         }
         else
         {
-            PopUpManage(false, 1).Forget();
+            PopUpManage(false, Mode.Load).Forget();
         }    
     }
     public void Load()
@@ -338,13 +359,11 @@ public class EditorManager : MonoBehaviour
         LoadUniTask().Forget();
     }
 
-
-    /// <param name="mode">[0 : save] [1 : load] [2 : longnodeError]</param>
-    async UniTaskVoid PopUpManage(bool isSuccess, int mode)
+    async UniTaskVoid PopUpManage(bool isSuccess, Mode mode)
     {
         if (isSuccess)
         {
-            if(mode == 0)
+            if(mode == Mode.Save)
                 popUpMainText.text = "Save Success";
             else
                 popUpMainText.text = "Load Success";
@@ -354,11 +373,11 @@ public class EditorManager : MonoBehaviour
         }
         else
         {
-            if (mode == 0)
+            if (mode == Mode.Save)
                 popUpMainText.text = "Save Failed (BPM Unknown)";
-            else if(mode == 1)
+            else if(mode == Mode.Load)
                 popUpMainText.text = "Load Failed (Location Unknown)";
-            else if(mode == 2)
+            else if(mode == Mode.Error)
                 popUpMainText.text = "LongNode Error. Please Restart";
 
             popUpMainText.color = Color.red;

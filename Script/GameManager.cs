@@ -1,7 +1,6 @@
 using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using UnityEngine;
 using TMPro;
@@ -12,13 +11,12 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance = null;//singleton pattern instance
 
-   
-    public float musicWaitTime;
-    public float speed;
-    public int combo { get; set; }
-    public float dist { get; private set; }
+    public int Combo { get; set; }
+    public float Dist { get; private set; }
     public float BPM { get; private set; }
 
+    public float musicWaitTime;
+    public float speed;
     public readonly List<Vector3> groundLineVecs = new List<Vector3>();
     public readonly List<Vector3> skyLineVecs = new List<Vector3>();
 
@@ -62,13 +60,13 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        dist = spawnLine.position.y - judgeLine.position.y;
+        Dist = spawnLine.position.y - judgeLine.position.y;
         InitializeLineVectors();
         //BPM = 120;
         //ArkNodeTest().Forget();
         LoadNodeData("test2");
         PrepareAllNodes();
-        combo = 0;
+        Combo = 0;
         judgeUI.text = "";
         detailJudgeUI.text = "";
     }
@@ -88,7 +86,7 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        comboUI.text = combo.ToString();
+        comboUI.text = Combo.ToString();
     }
 
     void InitializeLineVectors()
@@ -135,39 +133,39 @@ public class GameManager : MonoBehaviour
             NodeInfo nodeData = currentSongDatas[i];
             GameObject nodeObj;
 
-            if(nodeData.isSkyNode)
+            if(nodeData.IsSkyNode)
             {
-                if (nodeData.longBitNum == -1)
+                if (nodeData.LongBitNum == -1)
                     nodeObj = Instantiate(skyNodePrefab, laneStructure.transform);
                 else
                 {
                     nodeObj = Instantiate(arkNodePrefab, laneStructure.transform);
                     LongNode longNodeScript = nodeObj.GetComponentInChildren<LongNode>();
-                    longNodeScript.SetBitNum(nodeData.longBitNum);
+                    longNodeScript.SetBitNum(nodeData.LongBitNum);
                 }
             }
 
             else
             {
-                if (nodeData.longBitNum == -1)
+                if (nodeData.LongBitNum == -1)
                     nodeObj = Instantiate(nodePrefab, laneStructure.transform);
                 else
                 {
                     nodeObj = Instantiate(longNodePrefab, laneStructure.transform);
                     LongNode longNodeScript = nodeObj.GetComponentInChildren<LongNode>();
-                    longNodeScript.SetBitNum(nodeData.longBitNum);
+                    longNodeScript.SetBitNum(nodeData.LongBitNum);
                 }
             }
 
             Node nodeScript = nodeObj.GetComponent<Node>();
-            nodeScript.SetNodeLine(nodeData.lineNum);
+            nodeScript.SetNodeLine(nodeData.LineNum);
             SetNodePos(nodeScript);
-            ActivateNode(nodeData.bit, nodeObj).Forget();
+            ActivateNode(nodeData.Bit, nodeObj).Forget();
         }
     }
     private async UniTaskVoid ActivateNode(float bit, GameObject nodeObj)
     {
-        float activateBit = bit - (BPM * dist) / (60 * speed);
+        float activateBit = bit - (BPM * Dist) / (60 * speed);
         float secPerBit = 60 / BPM;
         float waitTime = activateBit * secPerBit;
         nodeObj.SetActive(false);
@@ -177,9 +175,9 @@ public class GameManager : MonoBehaviour
     void SetNodePos(Node node)
     {
         if (node.isSkyNode)
-            node.transform.position = spawnLine.position + skyLineVecs[node.line - 1];
+            node.transform.position = spawnLine.position + skyLineVecs[node.Line - 1];
         else
-            node.transform.position = spawnLine.position + groundLineVecs[node.line - 1];      
+            node.transform.position = spawnLine.position + groundLineVecs[node.Line - 1];      
     }
     public async UniTaskVoid SetJudegeUI(int n)
     {

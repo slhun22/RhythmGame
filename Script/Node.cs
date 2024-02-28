@@ -1,20 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Threading;
-using Unity.VisualScripting;
-using UnityEditor.Rendering;
 using UnityEngine;
-using UnityEngine.Pool;
 using Cysharp.Threading.Tasks;
-using UnityEditor.Experimental.GraphView;
 using System;
 
 public class Node : MonoBehaviour
 {
-    public int line { get; private set; }
-
-  
-    public bool isEnd { get; private set; } // only used in LongNode and ArkNode
+    public int Line { get; private set; }  
+    public bool IsEnd { get; private set; } // only used in LongNode and ArkNode
     public bool arkMode; // only used in ArkNode
     public bool headMode; // only used in LongNode
     SpriteRenderer spriteRenderer; // only used in LongNode
@@ -35,10 +26,10 @@ public class Node : MonoBehaviour
         //line = 1;
         timer = 0f;
         speed = GameManager.instance.speed;
-        dist = GameManager.instance.dist;
+        dist = GameManager.instance.Dist;
         expectedArriveTime = dist / speed;
         spriteRenderer = GetComponent<SpriteRenderer>();
-        isEnd = false;
+        IsEnd = false;
     }
 
     // Update is called once per frame
@@ -46,14 +37,14 @@ public class Node : MonoBehaviour
     {
         timer += Time.deltaTime;
         transform.Translate(Vector3.down * speed * Time.deltaTime);
-        if (isEnd) return;
+        if (IsEnd) return;
 
         if (arkMode)
         {
             if (expectedArriveTime - timer <= 0)
             {
-                GameManager.instance.VFXOn(line, isSkyNode);
-                isEnd = true;
+                GameManager.instance.VFXOn(Line, isSkyNode);
+                IsEnd = true;
             }
         }
         else
@@ -70,8 +61,8 @@ public class Node : MonoBehaviour
                   
                 else
                 {
-                    GameManager.instance.VFXOn(line, isSkyNode);
-                    isEnd = true;
+                    GameManager.instance.VFXOn(Line, isSkyNode);
+                    IsEnd = true;
                     spriteRenderer.color = new Color32(0, 0, 0, 0);
                 }
             }
@@ -81,12 +72,12 @@ public class Node : MonoBehaviour
                 Debug.Log("Miss");
                 GameManager.instance.SetJudegeUI(4).Forget();
                 GameManager.instance.ClearDetailJudge();
-                GameManager.instance.combo = 0;
+                GameManager.instance.Combo = 0;
                 if (!headMode)
                     gameObject.SetActive(false);
                 else
                 {
-                    isEnd = true;
+                    IsEnd = true;
                     spriteRenderer.color = new Color32(0, 0, 0, 0);
                 }
             }
@@ -95,7 +86,7 @@ public class Node : MonoBehaviour
     public KeyCode GetNodeLaneInput()
     {
         KeyCode laneInput = KeyCode.Space;
-        switch (line)
+        switch (Line)
         {
             case 1:
                 if (isSkyNode) laneInput = KeyCode.E;
@@ -126,33 +117,33 @@ public class Node : MonoBehaviour
             Debug.Log("perfect");
             GameManager.instance.SetJudegeUI(0).Forget();
             GameManager.instance.ClearDetailJudge();
-            GameManager.instance.combo++;
+            GameManager.instance.Combo++;
         }
         else if (PERFECT_TIME <= diff && diff < GREAT_TIME)
         {
             Debug.Log("Great");
             GameManager.instance.SetJudegeUI(1).Forget();
             GameManager.instance.SetDetailJudgeUI(actualDiff).Forget();
-            GameManager.instance.combo++;
+            GameManager.instance.Combo++;
         }
         else if (GREAT_TIME <= diff && diff < GOOD_TIME)
         {
             Debug.Log("Good");
             GameManager.instance.SetJudegeUI(2).Forget();
             GameManager.instance.SetDetailJudgeUI(actualDiff).Forget();
-            GameManager.instance.combo = 0;
+            GameManager.instance.Combo = 0;
         }  
         else if (GOOD_TIME <= diff && diff < BAD_TIME) 
         {
             Debug.Log("Bad");
             GameManager.instance.SetJudegeUI(3).Forget();
             GameManager.instance.SetDetailJudgeUI(actualDiff).Forget();
-            GameManager.instance.combo = 0;
+            GameManager.instance.Combo = 0;
         }
     }    
     public void SetNodeLine(int line)
     {
-        this.line = line;
+        this.Line = line;
     }
     async UniTaskVoid ActivateVFX()
     {
@@ -160,9 +151,9 @@ public class Node : MonoBehaviour
         GameObject hitObj = ObjectPool.instance.pool.Get();
 
         if (isSkyNode)
-            hitObj.transform.position = judgeLinePos + GameManager.instance.skyLineVecs[line - 1];
+            hitObj.transform.position = judgeLinePos + GameManager.instance.skyLineVecs[Line - 1];
         else
-            hitObj.transform.position = judgeLinePos + GameManager.instance.groundLineVecs[line - 1];
+            hitObj.transform.position = judgeLinePos + GameManager.instance.groundLineVecs[Line - 1];
 
         await UniTask.Delay(TimeSpan.FromSeconds(0.5f));
         ObjectPool.instance.pool.Release(hitObj);
