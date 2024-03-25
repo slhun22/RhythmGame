@@ -107,7 +107,7 @@ public class EditorManager : MonoBehaviour
     public GameObject GetLongNodeEnd(GameObject startNode) { return longNodeDic[startNode]; }
     public void MusicPlay()
     {
-        if(Input.GetKeyDown(KeyCode.KeypadEnter))
+        if(Input.GetKeyDown(KeyCode.O))
         {
             if (!IsPlaying)
             {
@@ -210,7 +210,7 @@ public class EditorManager : MonoBehaviour
                     nodeInfos.Add(ExtractNodeInfo((lineNodesLists[j])[i]));
 
         songName = songNameInput.text;
-        string path = string.Format("{0}/{1}.txt", Application.persistentDataPath, songName);
+        string path = string.Format("{0}/{1}.txt", Application.streamingAssetsPath, songName);
         if (File.Exists(path)) File.Delete(path);
 
         if(float.TryParse(bpmInput.text, out BPM))
@@ -261,7 +261,7 @@ public class EditorManager : MonoBehaviour
     {
         nodeInfos.Clear();
         songName = songNameInput.text;
-        string path = string.Format("{0}/{1}.txt", Application.persistentDataPath, songName);
+        string path = string.Format("{0}/{1}.txt", Application.streamingAssetsPath, songName);
         if(File.Exists(path))
         {
             string[] datas = File.ReadAllLines(path);
