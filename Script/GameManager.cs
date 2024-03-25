@@ -64,7 +64,7 @@ public class GameManager : MonoBehaviour
         InitializeLineVectors();
         //BPM = 120;
         //ArkNodeTest().Forget();
-        LoadNodeData("test2");
+        LoadNodeData("MilkyWayGalaxy");
         PrepareAllNodes();
         Combo = 0;
         judgeUI.text = "";
@@ -102,7 +102,7 @@ public class GameManager : MonoBehaviour
     }
     public void LoadNodeData(string songName)
     {
-        string path = string.Format("{0}/{1}.txt", Application.persistentDataPath, songName);
+        string path = string.Format("{0}/{1}.txt", Application.dataPath, songName);
         
         if(File.Exists(path))
         {

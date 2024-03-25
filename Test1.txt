@@ -1,0 +1,11 @@
+Test1	100
+False	2	0	2.75
+False	3	1.75	2.5
+False	1	4	2.5
+False	1	7.25	1.25
+False	2	8.25	1.5
+False	4	9.75	1.25
+False	1	11.5	9.5
+False	2	11.5	9.5
+False	3	11.5	9.5
+False	4	11.5	9.5
