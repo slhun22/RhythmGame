@@ -30,7 +30,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 13
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &7544337675754571507
 MonoBehaviour:
@@ -46,20 +46,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   musicWaitTime: 3
   speed: 30
+  laneStructure: {fileID: 0}
   nodePrefab: {fileID: 5040339049584434973, guid: d2d8eeda6097ff244a0a90db69521487, type: 3}
   longNodePrefab: {fileID: 3373294919143377147, guid: 9dece51970a6a334fa7e8c8ee49dc1bd, type: 3}
   skyNodePrefab: {fileID: 7603514887834412953, guid: bbda185985968dd42a1b2802cee48c05, type: 3}
   arkNodePrefab: {fileID: 886977070753750625, guid: 4cb2b45417b9c3045b585af52a1bb4f2, type: 3}
-  longNodeHitVFXs:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  arkNodeHitVFXs:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  longNodeHitVFX: []
+  arkNodeHitVFX: []
   spawnLine: {fileID: 0}
   judgeLine: {fileID: 0}
   comboUI: {fileID: 0}
@@ -90,3 +83,12 @@ MonoBehaviour:
     topRight: {r: 0, g: 0, b: 0, a: 1}
     bottomLeft: {r: 0.1882353, g: 0.16078432, b: 0.16078432, a: 1}
     bottomRight: {r: 0.1882353, g: 0.16078432, b: 0.16078432, a: 1}
+  AP_Color:
+    serializedVersion: 2
+    rgba: 4294937231
+  FC_Color:
+    serializedVersion: 2
+    rgba: 4294960281
+  NO_Color:
+    serializedVersion: 2
+    rgba: 4294967295
