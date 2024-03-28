@@ -72,7 +72,6 @@ public class Node : MonoBehaviour
                 Debug.Log("Miss");
                 GameManager.instance.SetJudegeUI(4).Forget();
                 GameManager.instance.ClearDetailJudge();
-                GameManager.instance.Combo = 0;
                 if (!headMode)
                     gameObject.SetActive(false);
                 else
@@ -117,28 +116,24 @@ public class Node : MonoBehaviour
             Debug.Log("perfect");
             GameManager.instance.SetJudegeUI(0).Forget();
             GameManager.instance.ClearDetailJudge();
-            GameManager.instance.Combo++;
         }
         else if (PERFECT_TIME <= diff && diff < GREAT_TIME)
         {
             Debug.Log("Great");
             GameManager.instance.SetJudegeUI(1).Forget();
             GameManager.instance.SetDetailJudgeUI(actualDiff).Forget();
-            GameManager.instance.Combo++;
         }
         else if (GREAT_TIME <= diff && diff < GOOD_TIME)
         {
             Debug.Log("Good");
             GameManager.instance.SetJudegeUI(2).Forget();
             GameManager.instance.SetDetailJudgeUI(actualDiff).Forget();
-            GameManager.instance.Combo = 0;
         }  
         else if (GOOD_TIME <= diff && diff < BAD_TIME) 
         {
             Debug.Log("Bad");
             GameManager.instance.SetJudegeUI(3).Forget();
             GameManager.instance.SetDetailJudgeUI(actualDiff).Forget();
-            GameManager.instance.Combo = 0;
         }
     }    
     public void SetNodeLine(int line)

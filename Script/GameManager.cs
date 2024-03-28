@@ -20,6 +20,8 @@ public class GameManager : MonoBehaviour
     public readonly List<Vector3> groundLineVecs = new List<Vector3>();
     public readonly List<Vector3> skyLineVecs = new List<Vector3>();
 
+    enum FinalState { AP, FC, NO }
+
     [SerializeField] GameObject laneStructure;
     [SerializeField] GameObject nodePrefab;
     [SerializeField] GameObject longNodePrefab;
@@ -36,15 +38,20 @@ public class GameManager : MonoBehaviour
     [SerializeField] VertexGradient greatColor;
     [SerializeField] VertexGradient goodColor;
     [SerializeField] VertexGradient badColor;
-    [SerializeField] VertexGradient missColor;  
+    [SerializeField] VertexGradient missColor;
+    [SerializeField] Color32 AP_Color;
+    [SerializeField] Color32 FC_Color;
+    [SerializeField] Color32 NO_Color;
     List<NodeInfo> currentSongDatas = new List<NodeInfo>(20);//contains current songs all nodedatas by using NodeInfo class.
     string songname;
-     
+
+    FinalState finalState;
+
     private void Awake()
     {
         Application.targetFrameRate = 60;
 
-        if(instance == null)
+        if (instance == null)
         {
             instance = this;
         }
@@ -62,31 +69,18 @@ public class GameManager : MonoBehaviour
     {
         Dist = spawnLine.position.y - judgeLine.position.y;
         InitializeLineVectors();
-        //BPM = 120;
-        //ArkNodeTest().Forget();
+        InitializeUI();
         LoadNodeData("MilkyWayGalaxy");
-        PrepareAllNodes();
+        PrepareAllNodes();   
+    }
+    void InitializeUI()
+    {
         Combo = 0;
+        comboUI.text = "0";
+        comboUI.color = AP_Color;
+        finalState = FinalState.AP;
         judgeUI.text = "";
         detailJudgeUI.text = "";
-    }
-
-    private async UniTaskVoid ArkNodeTest()
-    {
-        while(true)
-        {
-            await UniTask.Delay(TimeSpan.FromSeconds(1));
-            var arkNodeObj = Instantiate(arkNodePrefab);
-            Node arkNodeScript = arkNodeObj.GetComponent<Node>();
-            arkNodeScript.SetNodeLine(Random.Range(1, 5));
-            SetNodePos(arkNodeScript);
-        }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        comboUI.text = Combo.ToString();
     }
 
     void InitializeLineVectors()
@@ -103,8 +97,8 @@ public class GameManager : MonoBehaviour
     public void LoadNodeData(string songName)
     {
         string path = string.Format("{0}/{1}.txt", Application.dataPath, songName);
-        
-        if(File.Exists(path))
+
+        if (File.Exists(path))
         {
             string[] nodeDatas = File.ReadAllLines(path);
             string[] basicData = nodeDatas[0].Split('\t');
@@ -115,7 +109,7 @@ public class GameManager : MonoBehaviour
             {
                 var s = nodeDatas[i];
                 string[] nodeData = s.Split('\t');
-                NodeInfo nodeInfo = new NodeInfo(bool.Parse(nodeData[0]), int.Parse(nodeData[1]) ,float.Parse(nodeData[2]), float.Parse(nodeData[3]));
+                NodeInfo nodeInfo = new NodeInfo(bool.Parse(nodeData[0]), int.Parse(nodeData[1]), float.Parse(nodeData[2]), float.Parse(nodeData[3]));
                 currentSongDatas.Add(nodeInfo);
             }
         }
@@ -123,17 +117,17 @@ public class GameManager : MonoBehaviour
         else
         {
             Debug.Log("File lost");
-        }      
+        }
     }
     public void PrepareAllNodes()
     {
         int length = currentSongDatas.Count;
-        for(int i = 0; i < length; i++)
+        for (int i = 0; i < length; i++)
         {
             NodeInfo nodeData = currentSongDatas[i];
             GameObject nodeObj;
 
-            if(nodeData.IsSkyNode)
+            if (nodeData.IsSkyNode)
             {
                 if (nodeData.LongBitNum == -1)
                     nodeObj = Instantiate(skyNodePrefab, laneStructure.transform);
@@ -177,36 +171,58 @@ public class GameManager : MonoBehaviour
         if (node.isSkyNode)
             node.transform.position = spawnLine.position + skyLineVecs[node.Line - 1];
         else
-            node.transform.position = spawnLine.position + groundLineVecs[node.Line - 1];      
+            node.transform.position = spawnLine.position + groundLineVecs[node.Line - 1];
+    }
+    void SetComboUI(int n)
+    {
+        comboUI.text = Combo.ToString();
+
+        if (n == 1 && finalState == FinalState.AP)
+        {
+            comboUI.color = FC_Color;
+            finalState = FinalState.FC;
+        }     
+        else if (n > 1 && finalState == FinalState.FC)
+        {
+            comboUI.color = NO_Color;
+            finalState = FinalState.NO;
+        }         
     }
     public async UniTaskVoid SetJudegeUI(int n)
     {
-        switch(n)
+        switch (n)
         {
-            case 0 :
+            case 0:
                 judgeUI.text = "PERFECT";
                 judgeUI.colorGradient = perfectColor;
+                Combo++;
                 break;
             case 1:
                 judgeUI.text = "GREAT";
                 judgeUI.colorGradient = greatColor;
+                Combo++;
                 break;
             case 2:
                 judgeUI.text = "GOOD";
                 judgeUI.colorGradient = goodColor;
+                Combo = 0;
                 break;
             case 3:
                 judgeUI.text = "BAD";
                 judgeUI.colorGradient = badColor;
+                Combo = 0;
                 break;
             case 4:
                 judgeUI.text = "MISS";
                 judgeUI.colorGradient = missColor;
+                Combo = 0;
                 break;
             default:
                 Debug.Log("Wrong number input.");
                 break;
         }
+
+        SetComboUI(n);
 
         for (int i = 1; i < 5; i++)
         {
@@ -249,7 +265,7 @@ public class GameManager : MonoBehaviour
             arkNodeHitVFX[lineNum - 1].SetActive(true);
             laneStructure.transform.DORotate(new Vector3(0, GetTiltState(), 0), 0.4f);//아크노트 플레인 기울임 연출 코드임
         }
-           
+
 
         else
             longNodeHitVFX[lineNum - 1].SetActive(true);
@@ -261,7 +277,7 @@ public class GameManager : MonoBehaviour
             arkNodeHitVFX[lineNum - 1].SetActive(false);
             laneStructure.transform.DORotate(new Vector3(0, GetTiltState(), 0), 0.4f);//아크노트 플레인 기울임 연출 코드임
         }
-           
+
 
         else
             longNodeHitVFX[lineNum - 1].SetActive(false);
