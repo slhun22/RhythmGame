@@ -1,4 +1,4 @@
-MilkyWayGalaxy	177.3
+Milky_Way_Galaxy_(SIHanatsuka_Remix)	3R2	177.3
 False	1	0	-1
 False	2	0.5	-1
 False	3	1	-1
