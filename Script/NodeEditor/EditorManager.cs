@@ -19,6 +19,7 @@ public class EditorManager : MonoBehaviour
     [SerializeField] int toplineNum;//1 start
     [SerializeField] int musicCheckNum;//0 start
     [SerializeField] TMP_InputField songNameInput;
+    [SerializeField] TMP_InputField composerInput;
     [SerializeField] TMP_InputField bpmInput;
     //[SerializeField] TMP_InputField offsetInput;
     [SerializeField] AudioSource audiosrc;
@@ -33,6 +34,7 @@ public class EditorManager : MonoBehaviour
     //float musicOffset;  
     bool isProgressBarActive;
     string songName;
+    string composer;
     List<NodeInfo> nodeInfos = new List<NodeInfo>();
     Dictionary<GameObject, GameObject> longNodeDic = new Dictionary<GameObject, GameObject>(1000);//Caching container for longNode set
     enum Mode { Save, Load, Error }
@@ -192,7 +194,7 @@ public class EditorManager : MonoBehaviour
     public void Save()
     {
         List<NodeInfo> nodeInfos = new List<NodeInfo>();
-        List<List<EditorNode>> lineNodesLists = new List<List<EditorNode>>();
+        List<List<EditorNode>> lineNodesLists = new List<List<EditorNode>>();//라인마다 List를 하나씩 할당해서 한 라인의 모든 노트를 각 List에 넣는 방식
         for (int i = 0; i < 8; i++)
         {
             var lineNodesList = new List<EditorNode>();
@@ -210,6 +212,7 @@ public class EditorManager : MonoBehaviour
                     nodeInfos.Add(ExtractNodeInfo((lineNodesLists[j])[i]));
 
         songName = songNameInput.text;
+        composer = composerInput.text;
         string path = string.Format("{0}/{1}.txt", Application.streamingAssetsPath, songName);
         if (File.Exists(path)) File.Delete(path);
 
@@ -221,7 +224,7 @@ public class EditorManager : MonoBehaviour
             return;
         }
 
-        string basicSongData = $"{songName}\t{BPM}\n";
+        string basicSongData = $"{songName}\t{composer}\t{BPM}\n";
         File.AppendAllText(path, basicSongData);
         int length = nodeInfos.Count;
         for (int i = 0; i < length; i++)
@@ -271,10 +274,12 @@ public class EditorManager : MonoBehaviour
             float bit, longBitNum, maxbit = 0;
             string[] basicData = datas[0].Split('\t');
             songName = basicData[0];
-            BPM = float.Parse(basicData[1]);
+            composer = basicData[1];
+            BPM = float.Parse(basicData[2]);
+            composerInput.text = composer;
             bpmInput.text = BPM.ToString();
             int length = datas.Length;
-            for(int i = 1; i < length; i++)
+            for(int i = 1; i < length - 1; i++)
             {
                 s = datas[i].Split('\t');
                 isSkyNode = bool.Parse(s[0]);

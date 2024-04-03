@@ -23,7 +23,6 @@ public class Node : MonoBehaviour
 
     void Start()
     {
-        //line = 1;
         timer = 0f;
         speed = GameManager.instance.speed;
         dist = GameManager.instance.Dist;
@@ -35,6 +34,8 @@ public class Node : MonoBehaviour
     // Update is called once per frame
     void Update()//세부적인 타임체킹이 필요하므로 update에서 시간 돌리기
     {
+        if (Line == -1) return;
+
         timer += Time.deltaTime;
         transform.Translate(Vector3.down * speed * Time.deltaTime);
         if (IsEnd) return;
