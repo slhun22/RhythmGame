@@ -1,14 +1,12 @@
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using UnityEngine;
 using TMPro;
-using DG.Tweening;
-using Random = UnityEngine.Random;
+using UnityEngine;
 
-public class GameManager : MonoBehaviour
-{
+public class GameManager : MonoBehaviour {
     public static GameManager instance = null;//singleton pattern instance
 
     public int Combo { get; set; }
@@ -16,15 +14,15 @@ public class GameManager : MonoBehaviour
     public float BPM { get; private set; }
 
     public int PerfectNum { get; private set; }
-    public int GreatNum { get; private set; }  
-    public int GoodNum { get; private set; }   
+    public int GreatNum { get; private set; }
+    public int GoodNum { get; private set; }
     public int BadNum { get; private set; }
     public int MissNum { get; private set; }
     public int EarlyNum { get; private set; }
     public int LateNum { get; private set; }
     public int MaxCombo { get; private set; }
     public string SongName { get; private set; }
-    public string Composer {  get; private set; }
+    public string Composer { get; private set; }
 
     public float musicWaitTime;
     public float speed;
@@ -33,7 +31,7 @@ public class GameManager : MonoBehaviour
 
     public enum FinalState { AP, FC, NO }
 
-    public FinalState FinalStateResult {  get; private set; }
+    public FinalState FinalStateResult { get; private set; }
 
     [SerializeField] GameObject laneStructure;
     [SerializeField] GameObject nodePrefab;
@@ -58,17 +56,14 @@ public class GameManager : MonoBehaviour
     [SerializeField] Color32 NO_Color;
     List<NodeInfo> currentSongDatas = new List<NodeInfo>(20);//contains current songs all nodedatas by using NodeInfo class.
 
-    private void Awake()
-    {
+    private void Awake() {
         Application.targetFrameRate = 60;
 
-        if (instance == null)
-        {
+        if (instance == null) {
             instance = this;
         }
 
-        else
-        {
+        else {
             if (instance != this)
                 Destroy(this.gameObject);
         }
@@ -76,16 +71,15 @@ public class GameManager : MonoBehaviour
     }
 
     // Start is called before the first frame update
-    void Start()
-    {
+    void Start() {
         Dist = spawnLine.position.y - judgeLine.position.y;
+        speed = OptionManager.instance.GetNoteSpeed() * 8;
         InitializeLineVectors();
         InitializeBasicInfo();
         LoadNodeData("Milky_Way_Galaxy_(SIHanatsuka_Remix)");
-        PrepareAllNodes();   
+        PrepareAllNodes();
     }
-    void InitializeBasicInfo()
-    {
+    void InitializeBasicInfo() {
         Combo = 0;
         PerfectNum = 0;
         GreatNum = 0;
@@ -102,8 +96,7 @@ public class GameManager : MonoBehaviour
         detailJudgeUI.text = "";
     }
 
-    void InitializeLineVectors()
-    {
+    void InitializeLineVectors() {
         groundLineVecs.Add(new Vector3(-4.8357f, 0, 0));
         groundLineVecs.Add(new Vector3(-1.6212f, 0, 0));
         groundLineVecs.Add(new Vector3(1.6212f, 0, 0));
@@ -113,12 +106,10 @@ public class GameManager : MonoBehaviour
         skyLineVecs.Add(new Vector3(0.9f, 0, -3));
         skyLineVecs.Add(new Vector3(2.85f, 0, -3));
     }
-    public void LoadNodeData(string songName)
-    {
-        string path = string.Format("{0}/{1}.txt", Application.dataPath, songName);
+    public void LoadNodeData(string songName) {
+        string path = string.Format("{0}/{1}.txt", Application.streamingAssetsPath, songName);
 
-        if (File.Exists(path))
-        {
+        if (File.Exists(path)) {
             string[] nodeDatas = File.ReadAllLines(path);
             string[] basicData = nodeDatas[0].Split('\t');
             SongName = basicData[0].Replace('_', ' ');
@@ -126,8 +117,7 @@ public class GameManager : MonoBehaviour
             BPM = float.Parse(basicData[2]);
             int length = nodeDatas.Length;
             string endBit = "-1";
-            for (int i = 1; i < length; i++)
-            {
+            for (int i = 1; i < length; i++) {
                 var s = nodeDatas[i];
                 string[] nodeData = s.Split('\t');
                 NodeInfo nodeInfo = new NodeInfo(bool.Parse(nodeData[0]), int.Parse(nodeData[1]), float.Parse(nodeData[2]), float.Parse(nodeData[3]));
@@ -138,42 +128,35 @@ public class GameManager : MonoBehaviour
             currentSongDatas.Add(endMarker);
         }
 
-        else
-        {
+        else {
             Debug.Log("File lost");
         }
     }
-    public void PrepareAllNodes()
-    {
+    public void PrepareAllNodes() {
         int length = currentSongDatas.Count;
-        for (int i = 0; i < length; i++)
-        {
+        for (int i = 0; i < length; i++) {
             NodeInfo nodeData = currentSongDatas[i];
             GameObject nodeObj = null;
 
-            if(nodeData.LineNum == -1)//endMarker
+            if (nodeData.LineNum == -1)//endMarker
             {
                 nodeObj = endMarker;
             }
 
-            else if (nodeData.IsSkyNode)
-            {
+            else if (nodeData.IsSkyNode) {
                 if (nodeData.LongBitNum == -1)
                     nodeObj = Instantiate(skyNodePrefab, laneStructure.transform);
-                else
-                {
+                else {
                     nodeObj = Instantiate(arkNodePrefab, laneStructure.transform);
                     LongNode longNodeScript = nodeObj.GetComponentInChildren<LongNode>();
                     longNodeScript.SetBitNum(nodeData.LongBitNum);
                 }
             }
 
-            else if (!nodeData.IsSkyNode)
-            {
+            else if (!nodeData.IsSkyNode) {
                 if (nodeData.LongBitNum == -1)
                     nodeObj = Instantiate(nodePrefab, laneStructure.transform);
-                else
-                {
+                else {
                     nodeObj = Instantiate(longNodePrefab, laneStructure.transform);
                     LongNode longNodeScript = nodeObj.GetComponentInChildren<LongNode>();
                     longNodeScript.SetBitNum(nodeData.LongBitNum);
@@ -186,8 +169,7 @@ public class GameManager : MonoBehaviour
             ActivateNode(nodeData.Bit, nodeObj).Forget();
         }
     }
-    private async UniTaskVoid ActivateNode(float bit, GameObject nodeObj)
-    {
+    private async UniTaskVoid ActivateNode(float bit, GameObject nodeObj) {
         float activateBit = bit - (BPM * Dist) / (60 * speed);
         float secPerBit = 60 / BPM;
         float waitTime = activateBit * secPerBit;
@@ -195,8 +177,7 @@ public class GameManager : MonoBehaviour
         await UniTask.Delay(TimeSpan.FromSeconds(waitTime + musicWaitTime));
         nodeObj.SetActive(true);
     }
-    void SetNodePos(Node node)
-    {
+    void SetNodePos(Node node) {
         if (node.Line == -1)
             return;
 
@@ -206,30 +187,24 @@ public class GameManager : MonoBehaviour
         else
             node.transform.position = spawnLine.position + groundLineVecs[node.Line - 1];
     }
-    void SetComboUI(int n)
-    {
+    void SetComboUI(int n) {
         comboUI.text = Combo.ToString();
 
-        if (n == 1 && FinalStateResult == FinalState.AP)
-        {
+        if (n == 1 && FinalStateResult == FinalState.AP) {
             comboUI.color = FC_Color;
             FinalStateResult = FinalState.FC;
-        }     
-        else if (n > 1 && FinalStateResult == FinalState.FC)
-        {
+        }
+        else if (n > 1 && FinalStateResult == FinalState.FC) {
             comboUI.color = NO_Color;
             FinalStateResult = FinalState.NO;
-        }         
+        }
     }
-    void SetMaxCombo()
-    {
+    void SetMaxCombo() {
         if (MaxCombo < Combo)
             MaxCombo = Combo;
     }
-    public async UniTaskVoid SetJudegeUI(int n)
-    {
-        switch (n)
-        {
+    public async UniTaskVoid SetJudegeUI(int n) {
+        switch (n) {
             case 0:
                 judgeUI.text = "PERFECT";
                 judgeUI.colorGradient = perfectColor;
@@ -270,23 +245,19 @@ public class GameManager : MonoBehaviour
 
         SetComboUI(n);
 
-        for (int i = 1; i < 5; i++)
-        {
+        for (int i = 1; i < 5; i++) {
             judgeUI.fontSize = 11 * i;
             await UniTask.Delay(TimeSpan.FromMilliseconds(2));
         }
     }
 
-    public async UniTaskVoid SetDetailJudgeUI(float diff)
-    {
-        if (diff < 0)
-        {
+    public async UniTaskVoid SetDetailJudgeUI(float diff) {
+        if (diff < 0) {
             detailJudgeUI.text = "Early";
             detailJudgeUI.color = Color.blue;
             EarlyNum++;
         }
-        else if (diff > 0)
-        {
+        else if (diff > 0) {
             detailJudgeUI.text = "Late";
             detailJudgeUI.color = Color.red;
             LateNum++;
@@ -294,22 +265,18 @@ public class GameManager : MonoBehaviour
         else
             detailJudgeUI.text = "";
 
-        for (int i = 1; i < 5; i++)
-        {
+        for (int i = 1; i < 5; i++) {
             detailJudgeUI.fontSize = 8 * i;
             await UniTask.Delay(TimeSpan.FromMilliseconds(2));
         }
     }
 
-    public void ClearDetailJudge()
-    {
+    public void ClearDetailJudge() {
         detailJudgeUI.text = "";
     }
 
-    public void VFXOn(int lineNum, bool isSkyNode)
-    {
-        if (isSkyNode)
-        {
+    public void VFXOn(int lineNum, bool isSkyNode) {
+        if (isSkyNode) {
             arkNodeHitVFX[lineNum - 1].SetActive(true);
             laneStructure.transform.DORotate(new Vector3(0, GetTiltState(), 0), 0.4f);//아크노트 플레인 기울임 연출 코드임
         }
@@ -318,10 +285,8 @@ public class GameManager : MonoBehaviour
         else
             longNodeHitVFX[lineNum - 1].SetActive(true);
     }
-    public void VFXOff(int lineNum, bool isSkyNode)
-    {
-        if (isSkyNode)
-        {
+    public void VFXOff(int lineNum, bool isSkyNode) {
+        if (isSkyNode) {
             arkNodeHitVFX[lineNum - 1].SetActive(false);
             laneStructure.transform.DORotate(new Vector3(0, GetTiltState(), 0), 0.4f);//아크노트 플레인 기울임 연출 코드임
         }
@@ -330,8 +295,18 @@ public class GameManager : MonoBehaviour
         else
             longNodeHitVFX[lineNum - 1].SetActive(false);
     }
-    int GetTiltState()
-    {
+
+    public void PauseGame() {
+        Time.timeScale = 0;
+        MusicPlay.PauseMusic();
+    }
+
+    public void ResumeGame() {
+        Time.timeScale = 1;
+        MusicPlay.UnpauseMusic();
+    }
+
+    int GetTiltState() {
         int result = 0;
         if (arkNodeHitVFX[0].activeSelf) result += 2;
         if (arkNodeHitVFX[1].activeSelf) result += 1;
