@@ -115,7 +115,7 @@ public class GameManager : MonoBehaviour
     }
     public void LoadNodeData(string songName)
     {
-        string path = string.Format("{0}/{1}.txt", Application.dataPath, songName);
+        string path = string.Format("{0}/{1}.txt", Application.streamingAssetsPath, songName);
 
         if (File.Exists(path))
         {
