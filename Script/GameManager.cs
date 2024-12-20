@@ -55,6 +55,8 @@ public class GameManager : MonoBehaviour {
     [SerializeField] Color32 FC_Color;
     [SerializeField] Color32 NO_Color;
     List<NodeInfo> currentSongDatas = new List<NodeInfo>(20);//contains current songs all nodedatas by using NodeInfo class.
+    Queue<Node>[] lineq = new Queue<Node>[8]; //save all nodes prepared in each line  0123(ground) : 4567(sky)
+
 
     private void Awake() {
         Application.targetFrameRate = 60;
@@ -68,6 +70,9 @@ public class GameManager : MonoBehaviour {
                 Destroy(this.gameObject);
         }
 
+        for (int i = 0; i < 8; i++) {
+            lineq[i] = new Queue<Node>();
+        }
     }
 
     // Start is called before the first frame update
@@ -107,8 +112,11 @@ public class GameManager : MonoBehaviour {
         skyLineVecs.Add(new Vector3(2.85f, 0, -3));
     }
     public void LoadNodeData(string songName) {
+#if UNITY_EDITOR
+        string path = string.Format("{0}/{1}.txt", Application.dataPath, songName);
+#else
         string path = string.Format("{0}/{1}.txt", Application.streamingAssetsPath, songName);
-
+#endif
         if (File.Exists(path)) {
             string[] nodeDatas = File.ReadAllLines(path);
             string[] basicData = nodeDatas[0].Split('\t');
@@ -166,9 +174,37 @@ public class GameManager : MonoBehaviour {
             Node nodeScript = nodeObj.GetComponent<Node>();
             nodeScript.SetNodeLine(nodeData.LineNum);
             SetNodePos(nodeScript);
+            nodeScript.SetID(nodeData.Bit, nodeData.LineNum);
+
+            if (!(nodeData.IsSkyNode && nodeData.LongBitNum != -1)) {
+                int index = nodeData.LineNum - 1;
+                if (nodeData.IsSkyNode)
+                    index += 4;
+                if (index >= 0) {
+                    lineq[index].Enqueue(nodeScript);
+                }
+            }
+
             ActivateNode(nodeData.Bit, nodeObj).Forget();
         }
     }
+
+    public bool CheckTargetNode(Node node) {
+        int index = node.Line - 1;
+        if (node.isSkyNode)
+            index += 4;
+
+        Debug.Log(node.ID + ":" + lineq[index].Peek().ID);
+        return node.ID == lineq[index].Peek().ID;
+    }
+
+    public void RemoveNodeInQueue(Node node) {
+        int index = node.Line - 1;
+        if (node.isSkyNode)
+            index += 4;
+        lineq[index].Dequeue();
+    }
+
     private async UniTaskVoid ActivateNode(float bit, GameObject nodeObj) {
         float activateBit = bit - (BPM * Dist) / (60 * speed);
         float secPerBit = 60 / BPM;
@@ -177,10 +213,10 @@ public class GameManager : MonoBehaviour {
         await UniTask.Delay(TimeSpan.FromSeconds(waitTime + musicWaitTime));
         nodeObj.SetActive(true);
     }
+
     void SetNodePos(Node node) {
         if (node.Line == -1)
             return;
-
 
         if (node.isSkyNode)
             node.transform.position = spawnLine.position + skyLineVecs[node.Line - 1];
