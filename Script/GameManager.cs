@@ -113,9 +113,9 @@ public class GameManager : MonoBehaviour {
     }
     public void LoadNodeData(string songName) {
 #if UNITY_EDITOR
-        string path = string.Format("{0}/{1}.txt", Application.dataPath, songName);
+        string path = string.Format("{0}/{1}.vds", Application.dataPath, songName);
 #else
-        string path = string.Format("{0}/{1}.txt", Application.streamingAssetsPath, songName);
+        string path = string.Format("{0}/{1}.vds", Application.streamingAssetsPath, songName);
 #endif
         if (File.Exists(path)) {
             string[] nodeDatas = File.ReadAllLines(path);
